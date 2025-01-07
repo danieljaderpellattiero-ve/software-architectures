@@ -22,7 +22,7 @@ form label {
   color: #7b4397;
 }
 
-form input {
+form input, button {
   margin-bottom: 20px;
   padding: 10px;
   border: none;
@@ -30,7 +30,7 @@ form input {
   font-size: 1em;
 }
 
-form input[type="submit"] {
+form input[type="submit"], button {
   background-color: #7b4397;
   color: #fff;
   cursor: pointer;
