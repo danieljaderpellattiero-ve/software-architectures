@@ -20,7 +20,7 @@ function LoginPage() {
       // saving current user to the localStorage
       localStorage.setItem("currentUser", JSON.stringify(user));
       if (user.role === "admin") {
-        navigate("/AdminDashboard");
+        navigate("/admin");
       } else if (user.role === "doctor") {
         navigate("/DoctorDashboard");
       } else {
