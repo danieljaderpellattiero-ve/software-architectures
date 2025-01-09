@@ -1,9 +1,11 @@
 services:
   mongodb:
+    restart: always
     image: mongo:latest
     container_name: mongodb
     hostname: mongodb
     volumes:
+      - ./db/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - mongodb-data:/data/db/
       - mongodb-log:/var/log/mongodb/
     env_file:
