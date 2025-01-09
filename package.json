@@ -5,11 +5,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "tsc && node build/main.js",
+    "start": "node build/main.js",
     "dev": "nodemon build/main.js",
     "lint": "gts lint",
     "clean": "gts clean",
-    "compile": "tsc -w",
+    "compile": "tsc",
     "fix": "gts fix",
     "prepare": "npm run compile",
     "pretest": "npm run compile",

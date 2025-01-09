@@ -5,13 +5,14 @@ import jwt from 'jsonwebtoken';
 import vine from '@vinejs/vine';
 import { MongoClient } from 'mongodb';
 import verifyToken from './middleware/auth.js';
+// Database and API middleware configuration >>
 // MongoDB configuration
-const client = new MongoClient(`mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@localhost:27017/`);
 let db;
-// Express configuration
+const client = new MongoClient(`mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@localhost:27017/`);
+// Express (API) configuration
 const app = express();
 const port = process.env.PORT || 3000;
-app.use(express.json());
+app.use(express.json()); // Body parser middleware
 // Validation middleware configuration
 const userSchema = vine.object({
     name: vine.string(),
@@ -28,6 +29,7 @@ const credentialsSchema = vine.object({
 });
 const userValidator = vine.compile(userSchema);
 const credentialsValidator = vine.compile(credentialsSchema);
+// API endpoints >>
 // Patient registration
 app.post('/patient/register', async (req, res) => {
     try {
@@ -64,7 +66,7 @@ app.post('/patient/login', async (req, res) => {
         res.status(400).json({ error: 'Invalid request body' });
     }
 });
-// Patient profile update
+// Patient profile update (with JWT token verification)
 app.patch('/patient/profile/:email', verifyToken, async (req, res) => {
     try {
         await db.collection('patients').updateOne({ email: req.params.email }, {
@@ -81,7 +83,7 @@ app.patch('/patient/profile/:email', verifyToken, async (req, res) => {
         res.status(400).json({ error: 'Invalid request body' });
     }
 });
-// Patient profile deletion
+// Patient profile deletion (with JWT token verification)
 app.delete('/patient/profile/:email', verifyToken, async (req, res) => {
     try {
         await db.collection('patients').deleteOne({ email: req.params.email });
@@ -91,14 +93,17 @@ app.delete('/patient/profile/:email', verifyToken, async (req, res) => {
         res.status(400).json({ error: 'Invalid request body' });
     }
 });
+// API entrypoint >>
 app.listen(port, async () => {
     try {
+        console.log(`Server connecting to MongoDB at localhost:27017`);
         const connection = await client.connect();
         db = connection.db('unive-sw-arch');
         console.log(`Server connected to MongoDB at localhost:27017`);
         console.log(`Server listening at http://localhost:${port}`);
     }
     catch (error) {
+        console.error(`Server failed to connect to MongoDB at localhost:27017`);
         process.exit(1);
     }
 });

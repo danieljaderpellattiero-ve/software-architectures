@@ -108,11 +108,13 @@ app.delete('/patient/profile/:email', verifyToken, async (req, res) => {
 
 app.listen(port, async () => {
   try {
+    console.log(`Server connecting to MongoDB at localhost:27017`)
     const connection = await client.connect()
     db = connection.db('unive-sw-arch')
     console.log(`Server connected to MongoDB at localhost:27017`)
     console.log(`Server listening at http://localhost:${port}`)
   } catch (error) {
+    console.error(`Server failed to connect to MongoDB at localhost:27017`)
     process.exit(1)
   }
 })

@@ -1,3 +1,9 @@
+/**
+ *
+ * This middleware is used to verify the JWT token of the user.
+ * It runs before the patient profile update/delete endpoints.
+ *
+ */
 import jwt from 'jsonwebtoken';
 const verifyToken = (req, res, next) => {
     const token = req.header('Authorization').replace('Bearer ', '');
@@ -7,7 +13,7 @@ const verifyToken = (req, res, next) => {
     try {
         const decode = jwt.verify(token, process.env.JWT_SECRET);
         if (req.params.email === decode.email) {
-            next();
+            next(); // If the token is valid, and the email in the token matches the email in the URL (request parameter), the request is allowed to proceed.
         }
         else {
             return res.status(401).json({ error: 'Unauthorized' });
