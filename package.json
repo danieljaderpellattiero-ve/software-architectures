@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "Docker backend service",
   "main": "index.js",
+  "type": "module",
   "scripts": {
+    "start": "tsc && node build/main.js",
+    "dev": "nodemon build/main.js",
     "lint": "gts lint",
     "clean": "gts clean",
     "compile": "tsc -w",
@@ -23,8 +26,14 @@
   },
   "homepage": "https://github.com/danieljaderpellattiero-ve/software-architectures#readme",
   "devDependencies": {
+    "@types/node": "^22.7.5",
     "gts": "^6.0.2",
-    "typescript": "^5.7.3",
-    "@types/node": "^22.7.5"
+    "nodemon": "^3.1.9",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
   }
 }

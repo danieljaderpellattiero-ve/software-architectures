@@ -3,7 +3,7 @@
 > :grey_exclamation: Make sure you have [Docker](https://docs.docker.com/desktop/) (Desktop) installed on your machine.  
 > :grey_exclamation: To inspect the database, you can use [MongoDB Compass](https://www.mongodb.com/try/download/compass).
 
-## MongoDB
+## MongoDB (database)
 
 ### Setting up the containers
 
@@ -25,3 +25,17 @@ docker compose down -v
 ```
 
 > :warning: This command will clean up: containers, networks and both anonymous and named volumes.
+
+## Express (API)
+
+### Install the dependencies
+
+```bash
+npm install
+```
+
+### Start the server
+
+```bash
+npm run start
+```
