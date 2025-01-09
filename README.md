@@ -13,7 +13,7 @@ docker compose start # subsequent times
 ```
 
 > If you want to stop the service, you can use `docker compose stop`.  
-> If you want to remove the service, you can use `docker compose down -v`. (:warning: **containers, networks and volumes will be removed** :warning:)
+> If you want to remove the service, you can use `docker compose down -v`. ( :warning: **containers, networks and volumes will be removed** :warning: )
 
 ### Start the Express service
 
