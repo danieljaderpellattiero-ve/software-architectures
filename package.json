@@ -1,0 +1,30 @@
+{
+  "name": "unive-sw-arch",
+  "version": "1.0.0",
+  "description": "Docker backend service",
+  "main": "index.js",
+  "scripts": {
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "compile": "tsc -w",
+    "fix": "gts fix",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "posttest": "npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danieljaderpellattiero-ve/software-architectures.git"
+  },
+  "author": "Daniel Jader Pellattiero",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danieljaderpellattiero-ve/software-architectures/issues"
+  },
+  "homepage": "https://github.com/danieljaderpellattiero-ve/software-architectures#readme",
+  "devDependencies": {
+    "gts": "^6.0.2",
+    "typescript": "^5.7.3",
+    "@types/node": "^22.7.5"
+  }
+}
