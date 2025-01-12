@@ -1,0 +1,66 @@
+.patient-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+  }
+  
+  .patient-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .patient-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .patient-name {
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .patient-issue {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .document-link {
+    font-size: 14px;
+    color: #6c4c94;
+    text-decoration: none;
+    margin-top: 5px;
+  }
+  
+  .document-link:hover {
+    text-decoration: underline;
+  }
+  
+  .patient-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .action-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+  }
+  
+  .confirm-btn:hover {
+    background-color: #e6e6fa;
+  }
+  
+  .reject-btn:hover {
+    background-color: #ffcccc;
+  }
+  

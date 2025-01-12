@@ -1,11 +1,22 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import "./DoctorDashboard.css";
+import Sidebar from "./Sidebar";
+import PatientList from "./PatientList";
+import ConfirmedPatients from "./ConfirmedPatients"; // Correct capitalization
 
 function DoctorDashboard() {
   return (
-    <div>
-      <h1>Doctor Dashboard</h1>
-      <p>Welcome, Doctor!</p>
+    <div className="dashboard-container">
+      <Sidebar />
+      <div className="main-content">
+        <Routes>
+          {/* Default route */}
+          <Route index element={<PatientList />} />
+          {/* ConfirmedPatients route */}
+          <Route path="ConfirmedPatients" element={<ConfirmedPatients />} />
+        </Routes>
+      </div>
     </div>
   );
 }

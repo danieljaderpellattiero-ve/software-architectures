@@ -44,7 +44,7 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/AdminDashboard" element={<AdminDashboard />} />
-        <Route path="/DoctorDashboard" element={<DoctorDashboard />} />
+        <Route path="/DoctorDashboard/*" element={<DoctorDashboard />} />
         <Route path="/PatientDashboard" element={<PatientDashboard />} />
         <Route path="/GenerateReports" element={<GenerateReports />} />
         <Route path="/ManageAccess" element={<ManageAccess />} />
