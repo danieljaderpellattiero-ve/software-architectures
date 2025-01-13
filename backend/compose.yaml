@@ -1,0 +1,29 @@
+services:
+  mongodb:
+    restart: always
+    image: mongo:latest
+    container_name: mongodb
+    hostname: mongodb
+    volumes:
+      - ./db/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - mongodb-data:/data/db/
+      - mongodb-log:/var/log/mongodb/
+    env_file:
+      - .env
+    ports:
+      - "27017:27017"
+    networks:
+      - db-network
+
+volumes:
+  mongodb-data:
+    driver: local
+    name: mongodb-data
+  mongodb-log:
+    driver: local
+    name: mongodb-log
+
+networks:
+  db-network:
+    driver: bridge
+    name: db-network

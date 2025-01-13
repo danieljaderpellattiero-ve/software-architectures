@@ -1,0 +1,45 @@
+{
+  "name": "unive-sw-arch",
+  "version": "1.0.0",
+  "description": "Docker backend service",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node build/main.js",
+    "dev": "nodemon build/main.js",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "compile": "tsc",
+    "fix": "gts fix",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "posttest": "npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danieljaderpellattiero-ve/software-architectures.git"
+  },
+  "author": "Daniel Jader Pellattiero",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danieljaderpellattiero-ve/software-architectures/issues"
+  },
+  "homepage": "https://github.com/danieljaderpellattiero-ve/software-architectures#readme",
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "gts": "^6.0.2",
+    "nodemon": "^3.1.9",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@vinejs/vine": "^3.0.0",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.12.0"
+  }
+}
