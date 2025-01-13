@@ -7,6 +7,7 @@
   
   .patient-card {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
     padding: 15px;
@@ -16,8 +17,13 @@
   }
   
   .patient-info {
+    flex: 2;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  
+
   }
   
   .patient-name {
@@ -42,8 +48,11 @@
   }
   
   .patient-actions {
+    flex: 1;
     display: flex;
     gap: 10px;
+    justify-content: right;
+    align-content: center;
   }
   
   .action-btn {

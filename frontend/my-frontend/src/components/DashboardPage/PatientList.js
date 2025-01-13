@@ -7,6 +7,8 @@ const PatientList = () => {
     <div className="patient-list">
       {data.map((patient) => (
         <div key={patient.id} className="patient-card">
+          
+          
           <div className="patient-info">
             <span className="patient-name">{patient.name}</span>
             <span className="patient-issue">Issue: {patient.issue}</span>
