@@ -9,6 +9,8 @@ function ManageDoctors() {
     firstName: "",
     lastName: "",
     specialty: "",
+    codiceFiscale: "",
+    phoneNumber: "",
     email: "",
     password: "",
   });
