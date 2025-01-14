@@ -1,45 +1,27 @@
 {
-  "name": "unive-sw-arch",
+  "name": "hospital-management-backend",
   "version": "1.0.0",
-  "description": "Docker backend service",
-  "main": "index.js",
-  "type": "module",
+  "description": "Backend for Hospital Management System",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node build/main.js",
-    "dev": "nodemon build/main.js",
-    "lint": "gts lint",
-    "clean": "gts clean",
-    "compile": "tsc",
-    "fix": "gts fix",
-    "prepare": "npm run compile",
-    "pretest": "npm run compile",
-    "posttest": "npm run lint"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/danieljaderpellattiero-ve/software-architectures.git"
-  },
-  "author": "Daniel Jader Pellattiero",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/danieljaderpellattiero-ve/software-architectures/issues"
-  },
-  "homepage": "https://github.com/danieljaderpellattiero-ve/software-architectures#readme",
-  "devDependencies": {
-    "@types/node": "^22.7.5",
-    "gts": "^6.0.2",
-    "nodemon": "^3.1.9",
-    "typescript": "^5.7.3"
+    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc"
   },
   "dependencies": {
-    "@types/bcrypt": "^5.0.2",
-    "@types/express": "^5.0.0",
-    "@types/jsonwebtoken": "^9.0.7",
-    "@vinejs/vine": "^3.0.0",
-    "bcrypt": "^5.1.1",
-    "dotenv": "^16.4.7",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.0.3",
     "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2",
-    "mongodb": "^6.12.0"
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.1",
+    "@types/node": "^20.0.0",
+    "nodemon": "^3.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
   }
 }
