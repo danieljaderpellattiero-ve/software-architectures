@@ -4,7 +4,7 @@ import LoginPage from "./components/Login/LoginPage"; // Импорт компо
 import RegisterPage from "./components/RegisterPage/RegisterPage";
 import AdminDashboard from "./components/DashboardPage/AdminFolder/AdminDashboard";
 import DoctorDashboard from "./components/DashboardPage/DoctorDashboard";
-import PatientDashboard from "./components/DashboardPage/PatientDashboard";
+import PatientDashboard from "./components/DashboardPage/PatientFolder/PatientDashboard";
 
 function App() {
   localStorage.setItem(
