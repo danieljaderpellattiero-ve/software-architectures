@@ -1,8 +1,7 @@
-// src/pages/AdminDashboard.js
+
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Route, Routes, Outlet } from "react-router-dom";
-// import ManageDoctors from "./ManageDoctors";
 import PatientLayout from "./PatientLayout";
 import DashboardMain from "./DashboardMain";
 
