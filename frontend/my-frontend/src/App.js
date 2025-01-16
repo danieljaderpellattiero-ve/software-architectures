@@ -2,7 +2,8 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import LoginPage from "./components/Login/LoginPage"; // Импорт компонента
 import RegisterPage from "./components/RegisterPage/RegisterPage";
-<<<<<<< Updated upstream
+
+
 import AdminDashboard from "./components/DashboardPage/AdminFolder/AdminDashboard";
 import DoctorDashboard from "./components/DashboardPage/DoctorDashboard";
 import PatientDashboard from "./components/DashboardPage/PatientFolder/PatientDashboard";
@@ -21,7 +22,8 @@ import AdminDashboard from "./components/DashboardPage/AdminFolder/AdminDashboar
 // import DoctorDashboard from "./components/DashboardPage/DoctorDashboard";
 // import PatientDashboard from "./components/DashboardPage/PatientFolder/PatientDashboard";
 
->>>>>>> Stashed changes
+
+
 
 function App() {
   localStorage.setItem(
@@ -55,8 +57,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-<<<<<<< Updated upstream
-=======
+
         <Route path="/AdminDashboard" element={<AdminDashboard />} />
         <Route path="/DoctorDashboard/*" element={<DoctorDashboard />} />
         <Route path="/PatientDashboard/*" element={<PatientDashboard />} />
@@ -65,7 +66,7 @@ function App() {
         {/* <Route path="/ManageEmployees" element={<ManageEmployees />} /> */}
         {/* <Route path="/ManagePatients" element={<ManagePatients />} />
         <Route path="/ManageSchedule" element={<ManageSchedule />} /> */}
->>>>>>> Stashed changes
+
         <Route path="/admin/*" element={<AdminDashboard />} />
         <Route path="/DoctorDashboard" element={<DoctorDashboard />} />
         <Route path="/PatientDashboard" element={<PatientDashboard />} />
