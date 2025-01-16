@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import "./PatientList.css"; // Your Patient List styles
+import "./PatientRequests.css"; // Your Patient List styles
 import data from "../../../Data/data.json"; // Import your JSON data
 import Popup from "./Popup";
 import dayjs from "dayjs";
 
-const PatientList = () => {
+const PatientRequests = () => {
   const [openPopup, setOpenPopup] = useState(false); // Popup visibility state
   const [selectedTime, setSelectedTime] = useState(dayjs()); // Time state
   const [selectedDate, setSelectedDate] = useState(dayjs()); // Date state
@@ -12,6 +12,7 @@ const PatientList = () => {
 
   return (
     <div className="patient-list">
+      <h1>Patients Requests</h1>
       {data.map((patient) => (
         <div key={patient.id} className="patient-card">
           <div className="patient-info">
@@ -28,7 +29,7 @@ const PatientList = () => {
             >
               ✔️
             </button>
-            <button className="action-btn reject-btn">❌</button>
+            <button className="action-btn reject-btn">❌</button> {/* Add onClick event to delete record */}
           </div>
         </div>
       ))}
@@ -48,4 +49,4 @@ const PatientList = () => {
   );
 };
 
-export default PatientList;
+export default PatientRequests;

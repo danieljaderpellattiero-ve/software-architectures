@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import "./DoctorDashboard.css";
 import Sidebar from "./Sidebar";
-import PatientList from "./PatientList";
+import PatientRequests from "./PatientRequests";
 import ConfirmedPatients from "./ConfirmedPatients"; // Correct capitalization
 
 function DoctorDashboard() {
@@ -12,7 +12,7 @@ function DoctorDashboard() {
       <div className="main-content">
         <Routes>
           {/* Default route */}
-          <Route index element={<PatientList />} />
+          <Route index element={<PatientRequests />} />
           {/* ConfirmedPatients route */}
           <Route path="ConfirmedPatients" element={<ConfirmedPatients />} />
         </Routes>
