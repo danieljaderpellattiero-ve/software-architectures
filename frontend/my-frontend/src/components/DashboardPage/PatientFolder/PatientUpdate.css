@@ -1,0 +1,178 @@
+.app-container {
+    min-height: 100vh;
+    display: flex;
+    background-color: #f5f5f5;
+  }
+  
+  .sidebar {
+    width: 64px;
+    background-color: #7c3aed;
+    position: fixed;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 0;
+  }
+  
+  .sidebar-icon {
+    color: white;
+    font-size: 1.5rem;
+    margin: 1rem 0;
+    cursor: pointer;
+  }
+  
+  .sidebar-icon.bottom {
+    margin-top: auto;
+  }
+  
+  .main-content {
+    flex: 1;
+    margin-left: 64px;
+    padding: 2rem;
+  }
+  
+  .profile-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .profile-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  
+  .user-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+  
+  .avatar-small {
+    width: 32px;
+    height: 32px;
+    background-color: #e5e7eb;
+    border-radius: 50%;
+  }
+  
+  .profile-info {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .avatar-large {
+    width: 96px;
+    height: 96px;
+    background-color: #7c3aed;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+  }
+  
+  .profile-info h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-info p {
+    color: #666;
+    font-size: 0.875rem;
+  }
+  
+  .form-container {
+    margin-top: 2rem;
+  }
+  
+  .form-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .form-column h3 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    color: #666;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    display: block;
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.875rem;
+  }
+  
+  .phone-input {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .country-code {
+    width: 80px !important;
+  }
+  
+  .phone-number {
+    flex: 1;
+  }
+  
+  .button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .primary-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #7c3aed;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .primary-button:hover {
+    background-color: #6d28d9;
+  }
+  
+  @media (max-width: 768px) {
+    .form-columns {
+      grid-template-columns: 1fr;
+    }
+  
+    .profile-card {
+      padding: 1rem;
+    }
+  }
