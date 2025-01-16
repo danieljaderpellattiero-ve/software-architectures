@@ -2,7 +2,9 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Route, Routes, Outlet } from "react-router-dom";
-import Sidebar from "./AdminFolder/Sidebar";
+import ManageDoctors from "./ManageDoctors";
+import AdminLayout from "./AdminLayout";
+import DashboardHome from "./DashboardHome";
 
 function AdminDashboard() {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -10,17 +12,22 @@ function AdminDashboard() {
 
   // Если текущий пользователь не админ, перенаправляем его на страницу входа
   if (!currentUser || currentUser.role !== "admin") {
-    navigate("/login");
+    navigate("/");
     return null; // Чтобы не рендерить компонент, если пользователь не админ
   }
 
   return (
-    <div className="admin-dashboard">
-      <Sidebar />
-      <div className="content">
-        <h2>Welcome to Admin Dashboard</h2>
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={<AdminLayout />}>
+
+        <Route index element={<DashboardHome />} />
+
+        <Route path="manage-doctors" element={<ManageDoctors />} />
+        {/* <Route path="manage-nurses" element={<ManageNurses />} /> */}
+        {/* <Route path="manage-patients" element={<ManagePatients />} /> */}
+        {/* <Route path="logs" element={<SystemLogs />} /> */}
+      </Route>
+    </Routes>
   );
 }
 
