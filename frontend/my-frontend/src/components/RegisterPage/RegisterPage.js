@@ -148,7 +148,7 @@ function RegisterPage() {
           <input
             type="text"
             value={homeAddress}
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            onChange={(e) => setHomeAddress(e.target.value)}
             placeholder="Enter your current address"
           />
 

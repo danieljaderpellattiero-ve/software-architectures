@@ -1,0 +1,76 @@
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .popup-container {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 800px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  
+  .close-btn {
+    /* margin-bottom: 40px; */
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    color: black;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    background-color: transparent;  
+  }
+  
+  .popup-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .left {
+    flex: 1;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .right {
+    flex: 1;
+    background: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+
+  .note-input {
+    width: 90%;
+    height: 240px;
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: none;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .note-input:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+  
