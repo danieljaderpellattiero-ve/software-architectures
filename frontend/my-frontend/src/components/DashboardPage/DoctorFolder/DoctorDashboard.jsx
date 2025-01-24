@@ -9,7 +9,7 @@
     return (
       <div className="dashboard-container">
         <Sidebar />
-        <div className="main-content">
+        <div className="doctor-main-content">
           <Routes>
             {/* Default route */}
             <Route index element={<PatientRequests />} />

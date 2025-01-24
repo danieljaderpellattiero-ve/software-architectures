@@ -8,7 +8,7 @@ const BookAppointment = () => {
     { id: 2, name: "Dr. John Smith" },
     { id: 3, name: "Dr. Lisa Adams" },
     { id: 4, name: "Dr. Mark Lee" },
-    // Add more doctors here
+    // A  dd more doctors here
   ];
 
   return (

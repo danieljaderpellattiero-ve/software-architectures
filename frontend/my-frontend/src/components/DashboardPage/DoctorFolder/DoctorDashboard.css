@@ -17,7 +17,7 @@
     z-index: 100; /* Ensure it's above other content */
   }
   
-  .main-content {
+  .doctor-main-content {
     margin-left: 130px; /* Offset by the sidebar width */
     padding: 20px;
     flex: 1;

@@ -20,7 +20,7 @@ function AdminDashboard() {
   return (
     <div className="adminDashboard-container">
       <AdminSidebar className="AdminSidebar" />
-      <div className="main-content">
+      <div className="admin-main-content">
       <Routes>
           <Route index element={<UsersList/>} />
           <Route path="LogsList" element={<LogsList/>} />
