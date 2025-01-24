@@ -4,11 +4,6 @@ import LoginPage from "./components/Login/LoginPage"; // Импорт компо
 import RegisterPage from "./components/RegisterPage/RegisterPage";
 
 
-import AdminDashboard from "./components/DashboardPage/AdminFolder/AdminDashboard";
-import DoctorDashboard from "./components/DashboardPage/DoctorDashboard";
-import PatientDashboard from "./components/DashboardPage/PatientFolder/PatientDashboard";
-=======
-
 // import AdminDashboard from "./components/DashboardPage/AdminDashboard";
 import DoctorDashboard from "./components/DashboardPage/DoctorFolder/DoctorDashboard";
 import PatientDashboard from "./components/DashboardPage/PatientFolder/PatientDashboard";
@@ -66,10 +61,6 @@ function App() {
         {/* <Route path="/ManageEmployees" element={<ManageEmployees />} /> */}
         {/* <Route path="/ManagePatients" element={<ManagePatients />} />
         <Route path="/ManageSchedule" element={<ManageSchedule />} /> */}
-
-        <Route path="/admin/*" element={<AdminDashboard />} />
-        <Route path="/DoctorDashboard" element={<DoctorDashboard />} />
-        <Route path="/PatientDashboard" element={<PatientDashboard />} />
 
       </Routes>
     </Router>

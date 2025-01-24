@@ -1,0 +1,144 @@
+.medical-form-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    background-color: #f4f4f8;
+    min-height: 100vh;
+  }
+  
+  .medical-form {
+    width: 100%;
+    max-width: 600px;
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .medical-form h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+  }
+  
+  .form-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-section label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #555;
+    font-weight: 500;
+  }
+  
+  .form-section input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+  }
+  
+  .form-section input:focus {
+    outline: none;
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+  }
+  
+  .input-error {
+    border-color: #e53e3e;
+  }
+  
+  .error-message {
+    color: #e53e3e;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+  
+  .medications-section h2 {
+    margin-bottom: 1rem;
+    color: #444;
+    font-size: 1.1rem;
+  }
+  
+  .medication-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .remove-btn {
+    background-color: #e53e3e;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .remove-btn:hover {
+    background-color: #c53030;
+  }
+  
+  .add-medication-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: #7c3aed;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.75rem;
+    width: 100%;
+    margin-top: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .add-medication-btn:hover {
+    background-color: #6d28d9;
+  }
+  
+  .form-actions {
+    margin-top: 2rem;
+  }
+  
+  .submit-btn {
+    width: 100%;
+    background-color: #7c3aed;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .submit-btn:hover {
+    background-color: #6d28d9;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 600px) {
+    .medical-form-container {
+      padding: 1rem;
+    }
+  
+    .medical-form {
+      padding: 1.5rem;
+    }
+  
+    .medication-row {
+      grid-template-columns: 1fr;
+    }
+  }
