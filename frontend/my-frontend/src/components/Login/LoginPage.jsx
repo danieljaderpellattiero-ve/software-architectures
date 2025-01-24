@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./login.css";
-import TwoFactorAuth from "./TwoFactorAuth"; // import the 2FA modal component
+import TwoFactorAuth from "./TwoFactorAuth";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [show2FAModal, setShow2FAModal] = useState(false); // state to control modal visibility
+  const [show2FAModal, setShow2FAModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null); // Store current user
   const navigate = useNavigate();
 
   const handleLogin = (e) => {
@@ -16,10 +17,20 @@ function LoginPage() {
 
     if (user) {
       localStorage.setItem("currentUser", JSON.stringify(user));
-      // Show the 2FA modal after successful login
-      setShow2FAModal(true);
+      setCurrentUser(user); // Store the logged-in user
+      setShow2FAModal(true); // Show the 2FA modal
     } else {
       alert("Invalid email or password");
+    }
+  };
+
+  const handle2FASuccess = () => {
+    if (currentUser.role === "admin") {
+      navigate("/AdminDashboard");
+    } else if (currentUser.role === "doctor") {
+      navigate("/DoctorDashboard");
+    } else {
+      navigate("/PatientDashboard");
     }
   };
 
@@ -51,8 +62,12 @@ function LoginPage() {
         </p>
       </div>
 
-      {/* Show the 2FA modal if show2FAModal is true */}
-      {show2FAModal && <TwoFactorAuth closeModal={() => setShow2FAModal(false)} />}
+      {show2FAModal && (
+        <TwoFactorAuth
+          closeModal={() => setShow2FAModal(false)}
+          onSuccess={handle2FASuccess}
+        />
+      )}
     </div>
   );
 }
