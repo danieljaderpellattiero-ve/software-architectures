@@ -1,33 +1,35 @@
-import React, { useState } from 'react';
-import './UsersList.css'; // Importing the CSS file
+import React, { useState } from "react";
+import "./UsersList.css"; // Importing the CSS file
 
 const UsersList = () => {
   const [users, setUsers] = useState([
-    { id: 1, name: 'John Doe', email: 'john@example.com', type: 'doctor', phone: '+1 123 456 7890', dob: '01-01-1990', country: 'USA', city: 'New York' }
+    {
+      id: 1,
+      name: "John Doe",
+      email: "john@example.com",
+      type: "doctor",
+      phone: "+1 123 456 7890",
+      dob: "01-01-1990",
+      country: "USA",
+      city: "New York",
+    },
     // Add more users here
   ]);
 
-  const [query, setQuery] = useState('');
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [newUser, setNewUser] = useState({ name: '', email: '', type: 'doctor', phone: '', dob: '', country: '', city: '' });
+  const [query, setQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-
-  const togglePopup = () => {
-    setIsPopupOpen(!isPopupOpen);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewUser({ ...newUser, [name]: value });
-  };
-
-  const addUser = () => {
-    const newUserWithId = { ...newUser, id: users.length + 1 };
-    setUsers([...users, newUserWithId]);
-    setNewUser({ name: '', email: '', type: 'doctor', phone: '', dob: '', country: '', city: '' });
-    setIsPopupOpen(false);
-  };
+  const [isAddPopupOpen, setIsAddPopupOpen] = useState(false);
+  const [newUser, setNewUser] = useState({
+    name: "",
+    email: "",
+    password: "",
+    type: "doctor",
+    phone: "",
+    dob: "",
+    country: "",
+    city: "",
+  });
 
   const openModal = (user) => {
     setSelectedUser(user);
@@ -37,6 +39,27 @@ const UsersList = () => {
   const closeModal = () => {
     setSelectedUser(null);
     setIsModalOpen(false);
+  };
+
+  const deleteUser = (userId) => {
+    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+  };
+
+  const toggleAddPopup = () => {
+    setIsAddPopupOpen(!isAddPopupOpen);
+  };
+
+  const handleAddInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewUser((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const addUser = () => {
+    setUsers((prevUsers) => [
+      ...prevUsers,
+      { ...newUser, id: Math.random() },
+    ]);
+    setIsAddPopupOpen(false);
   };
 
   return (
@@ -57,123 +80,28 @@ const UsersList = () => {
       </div>
 
       {users.map((user) => (
-  <div
-    key={user.id}
-    className="user-card"
-    onClick={() => openModal(user)} // Открытие модалки
-  >
-    <div className="user-info">
-      <span className="user-name">{user.name}</span>
-      <span className="user-email">Email: {user.email}</span>
-    </div>
-    <div className="user-actions">
-      <button className="delete-button">Delete User ❌</button>
-    </div>
-  </div>
-))}
+        <div key={user.id} className="user-card" onClick={() => openModal(user)}>
+          <div className="user-info">
+            <span className="user-name">{user.name}</span>
+            <span className="user-email">Email: {user.email}</span>
+          </div>
+          <div className="user-actions">
+            <button
+              className="delete-button"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent triggering the modal
+                deleteUser(user.id);
+              }}
+            >
+              Delete User ❌
+            </button>
+          </div>
+        </div>
+      ))}
 
-
-      <button className="create-user" onClick={togglePopup}>
+      <button className="create-user" onClick={toggleAddPopup}>
         Add User
       </button>
-
-      {isPopupOpen && (
-        <>
-          <div className="overlay" onClick={togglePopup}></div>
-          <div className="popup">
-            <div className="popup-content">
-              <h3>Add New User</h3>
-              <div className="name">
-                <label className="name">
-                  Name:
-                  <input
-                    type="text"
-                    name="name"
-                    value={newUser.name}
-                    onChange={handleInputChange}
-                  />
-                </label>
-              </div>
-
-              <div className="email">
-                <label>
-                  Email:
-                  <input
-                    type="email"
-                    name="email"
-                    value={newUser.email}
-                    onChange={handleInputChange}
-                  />
-                </label>
-              </div>
-
-              <div className="phone">
-                <label>
-                  Phone:
-                  <input
-                    type="text"
-                    name="phone"
-                    value={newUser.phone}
-                    onChange={handleInputChange}
-                  />
-                </label>
-              </div>
-
-              <div className="dob">
-                <label>
-                  Date of Birth:
-                  <input
-                    type="date"
-                    name="dob"
-                    value={newUser.dob}
-                    onChange={handleInputChange}
-                  />
-                </label>
-              </div>
-
-              <div className="country">
-                <label>
-                  Country:
-                  <input
-                    type="text"
-                    name="country"
-                    value={newUser.country}
-                    onChange={handleInputChange}
-                  />
-                </label>
-              </div>
-
-              <div className="city">
-                <label>
-                  City:
-                  <input
-                    type="text"
-                    name="city"
-                    value={newUser.city}
-                    onChange={handleInputChange}
-                  />
-                </label>
-              </div>
-
-              <label>
-                Type:
-                <select
-                  name="type"
-                  value={newUser.type}
-                  onChange={handleInputChange}
-                >
-                  <option value="doctor">Doctor</option>
-                  <option value="patient">Patient</option>
-                </select>
-              </label>
-              <div className="popup-actions">
-                <button onClick={addUser}>Save</button>
-                <button onClick={togglePopup}>Cancel</button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
 
       {isModalOpen && selectedUser && (
         <>
@@ -210,9 +138,97 @@ const UsersList = () => {
                 </tbody>
               </table>
               <button onClick={closeModal} className="close-modal">
-  Close
-</button>
+                Close
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
+      {isAddPopupOpen && (
+        <>
+          <div className="overlay" onClick={toggleAddPopup}></div>
+          <div className="popup">
+            <div className="popup-content">
+              <h3>Add New User</h3>
+              <label>
+                Name:
+                <input
+                  type="text"
+                  name="name"
+                  value={newUser.name}
+                  onChange={handleAddInputChange}
+                />
+              </label>
+              <label>
+                Email:
+                <input
+                  type="email"
+                  name="email"
+                  value={newUser.email}
+                  onChange={handleAddInputChange}
+                />
+              </label>
+              <label>
+                Password:
+                <input
+                  type="password"
+                  name="password"
+                  value={newUser.password}
+                  onChange={handleAddInputChange}
+                />
+              </label>
+              <label>
+                Phone:
+                <input
+                  type="text"
+                  name="phone"
+                  value={newUser.phone}
+                  onChange={handleAddInputChange}
+                />
+              </label>
+              <label>
+                Date of Birth:
+                <input
+                  type="date"
+                  name="dob"
+                  value={newUser.dob}
+                  onChange={handleAddInputChange}
+                />
+              </label>
+              <label>
+                Country:
+                <input
+                  type="text"
+                  name="country"
+                  value={newUser.country}
+                  onChange={handleAddInputChange}
+                />
+              </label>
+              <label>
+                City:
+                <input
+                  type="text"
+                  name="city"
+                  value={newUser.city}
+                  onChange={handleAddInputChange}
+                />
+              </label>
+              <label>
+                Type:
+                <select
+                  name="type"
+                  value={newUser.type}
+                  onChange={handleAddInputChange}
+                >
+                  <option value="doctor">Doctor</option>
+                  <option value="patient">Patient</option>
+                </select>
+              </label>
+              <div className="popup-actions">
+                <button onClick={addUser}>Save</button>
+                <button onClick={toggleAddPopup}>Cancel</button>
+              </div>
             </div>
           </div>
         </>
