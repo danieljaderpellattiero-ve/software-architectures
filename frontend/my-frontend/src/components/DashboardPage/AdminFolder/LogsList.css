@@ -1,0 +1,43 @@
+.logs-list{
+    display: flex;
+    flex-direction: column;
+    /* gap: 15px; */
+    /* padding: 20px; */
+
+  }
+
+  .log-card {
+    display: flex;  
+    justify-content: space-between;
+    /* gap: 10px; */
+    /* padding: 15px; */
+    margin-bottom: 15px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+  }
+
+  .log-info{
+    width: 100%;
+    height: 10vh;
+    display: flex;
+    flex-direction: row;
+    padding-left: 10;
+    gap: 10px;
+    margin-left: 15px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .log-detail{
+    flex: 1;
+    font-size: 1em;
+    /* font-weight: ; */
+  }
+
+  .log-title{
+    font-size: 1.1em;
+    font-weight: bold;
+  }

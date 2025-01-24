@@ -1,12 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "./Sidebar.css"; // Sidebar-specific CSS file
+// import "./Sidebar.css"; // Sidebar-specific CSS file
 import logo from "../../../Images/logo.svg";
 import logoutIcon from "../../../Images/Logout.svg";
 import requests from "../../../Images/requests.svg";
 import listIcon from "../../../Images/List.svg";
 
-const Sidebar = () => {
+const AdminSidebar = () => {
   const navigate = useNavigate(); // Initialize the navigate function
 
   // Navigation handlers
@@ -48,4 +48,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default AdminSidebar;

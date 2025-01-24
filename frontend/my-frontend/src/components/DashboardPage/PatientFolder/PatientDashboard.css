@@ -1,0 +1,33 @@
+/* General Dashboard Layout */
+.dashboard-container {
+    display: flex; /* Create a flexible layout */
+    height: 100vh; /* Full viewport height */
+  }
+  
+  
+  
+  /* Main Content Area */
+  .dashboard-main-content {
+    margin-left: 104px; 
+    flex: 1;
+    padding: 20px;
+    background-color: #f9f9f9; /* Light gray background */
+    overflow-y: auto; /* Allow scrolling */
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1); 
+  }
+  
+  /* Mobile-Friendly Design */
+  @media (max-width: 768px) {
+    .patientSidebar {
+      width: 100px; /* Adjust width for smaller screens */
+    }
+  
+    .main-content {
+      margin-left: 100px; /* Adjust margin to match sidebar width */
+    }
+  
+    .patientSidebar a {
+      font-size: 14px; /* Reduce font size for smaller screens */
+    }
+  }
+  

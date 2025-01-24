@@ -2,7 +2,10 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Route, Routes, Outlet } from "react-router-dom";
-import Sidebar from "./AdminFolder/Sidebar";
+import AdminSidebar from "./AdminSidebar";
+import UsersList from "./UsersList";
+import "./AdminDashboard.css";
+import LogsList from "./LogsList";
 
 function AdminDashboard() {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -15,10 +18,13 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="admin-dashboard">
-      <Sidebar />
-      <div className="content">
-        <h2>Welcome to Admin Dashboard</h2>
+    <div className="adminDashboard-container">
+      <AdminSidebar className="AdminSidebar" />
+      <div className="main-content">
+      <Routes>
+          <Route index element={<UsersList/>} />
+          <Route path="LogsList" element={<LogsList/>} />
+        </Routes>
       </div>
     </div>
   );
