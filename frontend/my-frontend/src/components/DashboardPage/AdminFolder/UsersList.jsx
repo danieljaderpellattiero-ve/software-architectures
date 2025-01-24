@@ -56,19 +56,22 @@ const UsersList = () => {
         </div>
       </div>
 
-      {users
-        .filter((user) => user.name.toLowerCase().includes(query.toLowerCase()))
-        .map((user) => (
-          <div key={user.id} className="user-card" onClick={() => openModal(user)}>
-            <div className="user-info">
-              <span className="user-name">{user.name}</span>
-              <span className="user-email">Email: {user.email}</span>
-            </div>
-            <div className="user-actions">
-              <button className="delete-button">Delete User ❌</button>
-            </div>
-          </div>
-        ))}
+      {users.map((user) => (
+  <div
+    key={user.id}
+    className="user-card"
+    onClick={() => openModal(user)} // Открытие модалки
+  >
+    <div className="user-info">
+      <span className="user-name">{user.name}</span>
+      <span className="user-email">Email: {user.email}</span>
+    </div>
+    <div className="user-actions">
+      <button className="delete-button">Delete User ❌</button>
+    </div>
+  </div>
+))}
+
 
       <button className="create-user" onClick={togglePopup}>
         Add User

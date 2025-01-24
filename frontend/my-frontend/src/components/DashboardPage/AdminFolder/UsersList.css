@@ -326,4 +326,34 @@ select:focus {
   padding-left: 50px; /* Добавить отступ слева */
 }
 
+.user-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  cursor: pointer; /* Меняем курсор */
+  transition: all 0.3s ease; /* Плавный эффект */
+}
+
+.user-card:hover {
+  background-color: #f0f0f0; /* Изменяем цвет фона */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Добавляем тень */
+  transform: translateY(-2px); /* Легкое поднятие */
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+}
+
+
 
