@@ -1,43 +1,36 @@
-.logs-list{
-    display: flex;
-    flex-direction: column;
-    /* gap: 15px; */
-    /* padding: 20px; */
+.logs-list {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
 
-  }
+.logs-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: left;
+}
 
-  .log-card {
-    display: flex;  
-    justify-content: space-between;
-    /* gap: 10px; */
-    /* padding: 15px; */
-    margin-bottom: 15px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
-  }
+.logs-table {
+  width: 100%;
+  border-collapse: collapse;
+}
 
-  .log-info{
-    width: 100%;
-    height: 10vh;
-    display: flex;
-    flex-direction: row;
-    padding-left: 10;
-    gap: 10px;
-    margin-left: 15px;
-    align-items: center;
-    justify-content: space-between;
-  }
+.logs-table th,
+.logs-table td {
+  border: 1px solid #ccc;
+  padding: 15px; /* Увеличено для более просторного отображения */
+  text-align: left;
+}
 
-  .log-detail{
-    flex: 1;
-    font-size: 1em;
-    /* font-weight: ; */
-  }
+.logs-table th {
+  font-weight: bold;
+}
 
-  .log-title{
-    font-size: 1.1em;
-    font-weight: bold;
-  }
+.logs-table tr:nth-child(even) {
+  background-color: #fff; /* Убрано серое выделение */
+}
+
+.logs-table tr:hover {
+  background-color: #f9f9f9; /* Легкое выделение при наведении */
+}
