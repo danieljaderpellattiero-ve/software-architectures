@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import './UsersList.css'; // Importing the CSS file
 
 const UsersList = () => {
-  const users = [
+  const [users, setUsers] = useState([
     { id: 1, name: 'John Doe', email: 'john@example.com', type: 'doctor', phone: '+1 123 456 7890', dob: '01-01-1990', country: 'USA', city: 'New York' }
     // Add more users here
-  ];
+  ]);
 
   const [query, setQuery] = useState('');
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [newUser, setNewUser] = useState({ name: '', email: '', type: 'doctor' });
+  const [newUser, setNewUser] = useState({ name: '', email: '', type: 'doctor', phone: '', dob: '', country: '', city: '' });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
@@ -23,7 +23,9 @@ const UsersList = () => {
   };
 
   const addUser = () => {
-    console.log('New User:', newUser);
+    const newUserWithId = { ...newUser, id: users.length + 1 };
+    setUsers([...users, newUserWithId]);
+    setNewUser({ name: '', email: '', type: 'doctor', phone: '', dob: '', country: '', city: '' });
     setIsPopupOpen(false);
   };
 
@@ -54,17 +56,19 @@ const UsersList = () => {
         </div>
       </div>
 
-      {users.map((user) => (
-        <div key={user.id} className="user-card" onClick={() => openModal(user)}>
-          <div className="user-info">
-            <span className="user-name">{user.name}</span>
-            <span className="user-email">Email: {user.email}</span>
+      {users
+        .filter((user) => user.name.toLowerCase().includes(query.toLowerCase()))
+        .map((user) => (
+          <div key={user.id} className="user-card" onClick={() => openModal(user)}>
+            <div className="user-info">
+              <span className="user-name">{user.name}</span>
+              <span className="user-email">Email: {user.email}</span>
+            </div>
+            <div className="user-actions">
+              <button className="delete-button">Delete User ❌</button>
+            </div>
           </div>
-          <div className="user-actions">
-            <button className="delete-button">Delete User ❌</button>
-          </div>
-        </div>
-      ))}
+        ))}
 
       <button className="create-user" onClick={togglePopup}>
         Add User
@@ -100,13 +104,49 @@ const UsersList = () => {
                 </label>
               </div>
 
-              <div className="password">
+              <div className="phone">
                 <label>
-                  Password:
+                  Phone:
                   <input
-                    type="password"
-                    name="password"
-                    value={newUser.password}
+                    type="text"
+                    name="phone"
+                    value={newUser.phone}
+                    onChange={handleInputChange}
+                  />
+                </label>
+              </div>
+
+              <div className="dob">
+                <label>
+                  Date of Birth:
+                  <input
+                    type="date"
+                    name="dob"
+                    value={newUser.dob}
+                    onChange={handleInputChange}
+                  />
+                </label>
+              </div>
+
+              <div className="country">
+                <label>
+                  Country:
+                  <input
+                    type="text"
+                    name="country"
+                    value={newUser.country}
+                    onChange={handleInputChange}
+                  />
+                </label>
+              </div>
+
+              <div className="city">
+                <label>
+                  City:
+                  <input
+                    type="text"
+                    name="city"
+                    value={newUser.city}
                     onChange={handleInputChange}
                   />
                 </label>
@@ -167,8 +207,9 @@ const UsersList = () => {
                 </tbody>
               </table>
               <button onClick={closeModal} className="close-modal">
-                Close
-              </button>
+  Close
+</button>
+
             </div>
           </div>
         </>

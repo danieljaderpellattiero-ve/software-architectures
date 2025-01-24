@@ -226,3 +226,104 @@ select:focus {
   background-color: #c82333;
   transform: scale(1.05);
 }
+
+/* Общие стили */
+.users-list {
+  padding: 20px;
+}
+
+.user-card {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.user-card:hover {
+  background-color: #f9f9f9;
+}
+
+/* Стили модального окна */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%; /* Сделать окно шире */
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  z-index: 1000;
+}
+
+.modal-content {
+  text-align: center; /* Выровнять текст */
+}
+
+.modal table {
+  margin: 20px auto; /* Центрировать таблицу */
+  width: 100%; /* Использовать всю ширину */
+}
+
+.modal table td {
+  padding: 10px 15px;
+  text-align: left; /* Текст выровнен по левому краю */
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.close-modal {
+  background-color: #d9534f; /* Цвет кнопки как у Delete User */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px; /* Увеличить размер текста */
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.close-modal:hover {
+  background-color: #c9302c; /* Цвет при наведении */
+}
+
+.modal table {
+  margin: 20px auto;
+  width: 80%; /* Установить ширину таблицы */
+  border-spacing: 15px; /* Добавить пространство между строками */
+}
+
+.modal table td:first-child {
+  font-weight: bold; /* Жирный текст */
+  text-align: left; /* Выравнивание текста по левому краю */
+  padding-right: 50px; /* Добавить отступ справа */
+}
+
+.modal table td:last-child {
+  text-align: left; /* Выравнивание текста по левому краю */
+  padding-left: 50px; /* Добавить отступ слева */
+}
+
+
