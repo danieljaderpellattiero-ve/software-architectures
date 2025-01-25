@@ -1,121 +1,165 @@
-import React from 'react';
-import './UsersList.css'; // Importing the CSS file
+import React, { useState } from 'react';
+import './UsersList.css';
 
 const UsersList = () => {
-  const users = [{ id: 1, name: 'John Doe', email: 'john@example.com', type: 'doctor' }];
-  
-  const [query, setQuery] = React.useState('');
-  const [isPopupOpen, setIsPopupOpen] = React.useState(false);
-  const [newUser, setNewUser] = React.useState({ name: '', email: '', type: 'doctor' });
+  const [users, setUsers] = useState([
+    { id: 1, name: 'John Doe', email: 'john@example.com', type: 'Doctor', dob: '1990-01-01' },
+  ]);
+  const [newUser, setNewUser] = useState({ name: '', email: '', type: 'Doctor', dob: '' });
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState('All');
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  const togglePopup = () => {
-    setIsPopupOpen(!isPopupOpen);
+  const handleAddUser = () => {
+    if (newUser.name && newUser.email && newUser.dob) {
+      setUsers([...users, { id: users.length + 1, ...newUser }]);
+      setNewUser({ name: '', email: '', type: 'Doctor', dob: '' });
+      setIsAddUserModalOpen(false);
+    }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewUser({ ...newUser, [name]: value });
+  const handleDeleteUser = (id) => {
+    setUsers(users.filter((user) => user.id !== id));
   };
 
-  const addUser = () => {
-    console.log('New User:', newUser);
-    setIsPopupOpen(false);
-  };
+  const filteredUsers = users.filter(
+    (user) =>
+      (filter === 'All' || user.type === filter) &&
+      user.name.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
     <div className="users-list">
-      <div className="filters">
-        <div className="usertype">
-          <label htmlFor="select">User Type: </label>
-          <select className="select">
-            <option value="doctor">Doctor</option>
-            <option value="patient">Patient</option>
-          </select>
-        </div>
-
-        <div className="search">
-          <label htmlFor="search">Search: </label>
-          <input type="text" onChange={(e) => setQuery(e.target.value)} />
-        </div>
-      </div>
-
-      {users.map((user) => (
-        <div key={user.id} className="user-card">
-          <div className="user-info">
-            <span className="user-name">{user.name}</span>
-            <span className="user-email">Email: {user.email}</span>
-          </div>
-          <div className="user-actions">
-            <button className="delete-button">Delete User ❌</button>
-          </div>
-        </div>
-      ))}
-
-      <button className="create-user" onClick={togglePopup}>
+      <button className="add-user-button" onClick={() => setIsAddUserModalOpen(true)}>
         Add User
       </button>
 
-      {isPopupOpen && (
-        <>
-          <div className="overlay" onClick={togglePopup}></div>
-          <div className="popup">
+      <div className="controls">
+        <select
+          className="filter-select"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        >
+          <option value="All">All</option>
+          <option value="Doctor">Doctor</option>
+          <option value="Patient">Patient</option>
+        </select>
 
-            <div className="popup-content">
-              <h3>Add New User</h3>
-              <div className='name'>
-              <label className='name'>
-                Name:
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Search by name"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </div>
+
+      <table className="users-table">
+        <thead>
+          <tr>
+            <th>№</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Type</th>
+            <th>Date of Birth</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredUsers.map((user, index) => (
+            <tr
+              key={user.id}
+              className="user-row"
+              onClick={() => setSelectedUser(user)}
+            >
+              <td>{index + 1}</td>
+              <td>{user.name}</td>
+              <td>{user.email}</td>
+              <td>{user.type}</td>
+              <td>{user.dob}</td>
+              <td>
+                <button
+                  className="delete-user-button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteUser(user.id);
+                  }}
+                >
+                  Delete User
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {isAddUserModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsAddUserModalOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Add New User</h3>
+            <form className="modal-form">
+              <label className="modal-label">
+                <span>Name <span className="required">*</span>:</span>
                 <input
                   type="text"
-                  name="name"
                   value={newUser.name}
-                  onChange={handleInputChange}
+                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
                 />
               </label>
-              </div>
-
-              <div className='email'>
-              <label >
-                Email:
+              <label className="modal-label">
+                <span>Email <span className="required">*</span>:</span>
                 <input
                   type="email"
-                  name="email"
                   value={newUser.email}
-                  onChange={handleInputChange}
+                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                 />
               </label>
-              </div>
-              
-              <div className='password'>
-              <label>
-                Password:
+              <label className="modal-label">
+                <span>Date of Birth <span className="required">*</span>:</span>
                 <input
-                  type="password"
-                  name="password"
-                  value={newUser.password}
-                  onChange={handleInputChange}
+                  type="date"
+                  value={newUser.dob}
+                  onChange={(e) => setNewUser({ ...newUser, dob: e.target.value })}
                 />
               </label>
-              </div>
-              
-              <label>
-                Type:
+              <label className="modal-label">
+                <span>Type <span className="required">*</span>:</span>
                 <select
-                  name="type"
                   value={newUser.type}
-                  onChange={handleInputChange}
+                  onChange={(e) => setNewUser({ ...newUser, type: e.target.value })}
                 >
-                  <option value="doctor">Doctor</option>
-                  <option value="patient">Patient</option>
+                  <option value="Doctor">Doctor</option>
+                  <option value="Patient">Patient</option>
                 </select>
               </label>
-              <div className="popup-actions">
-                <button onClick={addUser}>Save</button>
-                <button onClick={togglePopup}>Cancel</button>
-              </div>
+            </form>
+            <div className="modal-actions">
+              <button className="save-button" onClick={handleAddUser}>Save</button>
+              <button className="cancel-button" onClick={() => setIsAddUserModalOpen(false)}>Cancel</button>
             </div>
           </div>
-        </>
+        </div>
+      )}
+
+      {selectedUser && (
+        <div className="modal-overlay" onClick={() => setSelectedUser(null)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>User Information</h3>
+            <div className="modal-user-info">
+              <p><strong>Name:</strong> {selectedUser.name}</p>
+              <p><strong>Email:</strong> {selectedUser.email}</p>
+              <p><strong>Type:</strong> {selectedUser.type}</p>
+              <p><strong>Date of Birth:</strong> {selectedUser.dob}</p>
+            </div>
+            <button
+              className="close-button"
+              onClick={() => setSelectedUser(null)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
