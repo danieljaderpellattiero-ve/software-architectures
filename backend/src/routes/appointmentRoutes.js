@@ -5,14 +5,13 @@ const {
   updateAppointmentStatus,
   deleteAppointment,
 } = require('../controllers/appointmentController');
-const authMiddleware = require('../middlewares/authMiddleware'); // Импорт middleware для авторизации
+const authMiddleware = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
-// Маршруты для управления записями
-router.post('/', authMiddleware, createAppointment); // Создание запроса
-router.get('/', authMiddleware, getAppointments); // Получение всех записей
-router.put('/:id', authMiddleware, updateAppointmentStatus); // Обновление статуса
-router.delete('/:id', authMiddleware, deleteAppointment); // Удаление записи
+router.post('/', authMiddleware, createAppointment);
+router.get('/', authMiddleware, getAppointments);
+router.put('/:id', authMiddleware, updateAppointmentStatus);
+router.delete('/:id', authMiddleware, deleteAppointment);
 
 module.exports = router;

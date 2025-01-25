@@ -1,59 +1,42 @@
 const Appointment = require('../models/Appointment');
 
-// Создание запроса на запись
+// Create an appointment
 exports.createAppointment = async (req, res) => {
   try {
-    const { patient, doctor, date, reason } = req.body;
+    const { doctor, patient, date, time, reason } = req.body;
 
-    if (!patient || !doctor || !date || !reason) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-
-    const appointment = new Appointment({ patient, doctor, date, reason });
+    const appointment = new Appointment({ doctor, patient, date, time, reason });
     await appointment.save();
-    res.status(201).json({ message: 'Appointment request created', appointment });
+
+    res.status(201).json({ message: 'Appointment created successfully', appointment });
   } catch (error) {
     console.error('Error creating appointment:', error.message);
     res.status(500).json({ error: error.message });
   }
 };
 
-// Получение всех запросов (для врача)
+// Fetch appointments for a doctor or patient
 exports.getAppointments = async (req, res) => {
   try {
     const { role, id } = req.user;
 
-    let appointments;
-    if (role === 'doctor') {
-      appointments = await Appointment.find({ doctor: id }).populate('patient doctor', 'name');
-    } else if (role === 'patient') {
-      appointments = await Appointment.find({ patient: id }).populate('doctor', 'name');
-    } else {
-      return res.status(403).json({ message: 'Forbidden' });
-    }
+    const filter = role === 'doctor' ? { doctor: id } : { patient: id };
+    const appointments = await Appointment.find(filter).populate('doctor patient', 'name email role');
 
-    res.status(200).json({ appointments });
+    res.status(200).json({ message: 'Appointments fetched successfully', appointments });
   } catch (error) {
     console.error('Error fetching appointments:', error.message);
     res.status(500).json({ error: error.message });
   }
 };
 
-// Обновление статуса запроса (принять/отклонить)
+// Update appointment status
 exports.updateAppointmentStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!['accepted', 'rejected'].includes(status)) {
-      return res.status(400).json({ message: 'Invalid status' });
-    }
-
     const appointment = await Appointment.findByIdAndUpdate(id, { status }, { new: true });
-    if (!appointment) {
-      return res.status(404).json({ message: 'Appointment not found' });
-    }
-
     res.status(200).json({ message: `Appointment ${status}`, appointment });
   } catch (error) {
     console.error('Error updating appointment status:', error.message);
@@ -61,22 +44,19 @@ exports.updateAppointmentStatus = async (req, res) => {
   }
 };
 
-
+// Delete an appointment
 exports.deleteAppointment = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const appointment = await Appointment.findByIdAndDelete(id);
-  
-      if (!appointment) {
-        return res.status(404).json({ message: 'Appointment not found' });
-      }
-  
-      res.status(200).json({ message: 'Appointment deleted successfully' });
-    } catch (error) {
-      console.error('Error deleting appointment:', error.message);
-      res.status(500).json({ error: error.message });
+  try {
+    const { id } = req.params;
+
+    const appointment = await Appointment.findByIdAndDelete(id);
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
     }
-  };
-  
-  
-  
+
+    res.status(200).json({ message: 'Appointment deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting appointment:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};

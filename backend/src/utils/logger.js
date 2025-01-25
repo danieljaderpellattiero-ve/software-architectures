@@ -1,11 +1,17 @@
 const Log = require('../models/Log');
 
-const logAction = async (userId, action, resource, resourceId) => {
+const logAction = async (userId, action, entityType, entityId) => {
   try {
-    await Log.create({ userId, action, resource, resourceId });
-    console.log(`Log recorded: ${action} on ${resource} by User ${userId}`);
+    await Log.create({
+      user: userId,
+      action,
+      details: {
+        entityType,
+        entityId,
+      },
+    });
   } catch (error) {
-    console.error('Error recording log:', error.message);
+    console.error('Error logging action:', error.message);
   }
 };
 

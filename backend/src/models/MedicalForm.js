@@ -1,15 +1,11 @@
 const mongoose = require('mongoose');
 
-const medicalFormSchema = new mongoose.Schema({
-  patient: { type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true },
-  medicalHistory: { type: String, required: true },
-  allergies: { type: String, default: '' },
-  currentMedications: { type: String, default: '' },
-  additionalInfo: { type: String, default: '' },
+const medicalRecordSchema = new mongoose.Schema({
+  patientId: { type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true },
+  doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  notes: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
 });
 
-const MedicalForm = mongoose.model('MedicalForm', medicalFormSchema);
-
-module.exports = MedicalForm;
+// Use `mongoose.models` to prevent overwriting the model
+module.exports = mongoose.models.MedicalRecord || mongoose.model('MedicalRecord', medicalRecordSchema);

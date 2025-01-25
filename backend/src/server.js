@@ -6,14 +6,13 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
-
 app.use(bodyParser.json());
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-
+// Routes
 const userRoutes = require('./routes/userRoutes');
 app.use('/api/users', userRoutes);
 
@@ -32,8 +31,10 @@ app.use('/api/medical-forms', medicalFormRoutes);
 const medicalRecordRoutes = require('./routes/medicalRecordRoutes');
 app.use('/api/medical-records', medicalRecordRoutes);
 
+const logRoutes = require('./routes/logRoutes');
+app.use('/api/logs', logRoutes);
 
-
+// Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send({ error: 'Something went wrong!' });
@@ -46,7 +47,5 @@ if (require.main === module) {
     console.log(`Server running on port ${PORT}`);
   });
 }
-
-
 
 module.exports = app;
