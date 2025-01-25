@@ -19,6 +19,11 @@ const AdminSidebar = () => {
     navigate("/AdminDashboard/LogsList"); // Navigate to ConfirmedPatients
   };
 
+  const handleLogoutNagvigation = () => {
+    navigate("/"); // Navigate to the default route
+  };
+
+
   return (
     <div className="adminSidebar">
       <div className="logo">
@@ -38,7 +43,7 @@ const AdminSidebar = () => {
         </div>
         <div className="bottom-menu">
           <button className="menu-item">
-            <img src={logoutIcon} alt="Logout" className="menu-icon" />
+            <img src={logoutIcon} alt="Logout" className="menu-icon" onClick={handleLogoutNagvigation} />
           </button>
         </div>
       </div>

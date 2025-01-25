@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-// import "./Sidebar.css"; // Sidebar-specific CSS file
+import "./Sidebar.css"; // Sidebar-specific CSS file
 import logo from "../../../Images/logo.svg";
 import logoutIcon from "../../../Images/Logout.svg";
 import requests from "../../../Images/requests.svg";
@@ -18,8 +18,12 @@ const AdminSidebar = () => {
     navigate("/DoctorDashboard/ConfirmedPatients"); // Navigate to ConfirmedPatients
   };
 
+  const handleLogoutNagvigation = () => {
+    navigate("/"); // Navigate to the default route
+  };
+
   return (
-    <div className="sidebar">
+    <div className="doctor-sidebar">
       <div className="logo">
         <img src={logo} alt="Logo" />
       </div>
@@ -40,7 +44,7 @@ const AdminSidebar = () => {
         </div>
         <div className="bottom-menu">
           <button className="menu-item">
-            <img src={logoutIcon} alt="Logout" className="menu-icon" />
+            <img src={logoutIcon} alt="Logout" className="menu-icon" onClick={handleLogoutNagvigation}/>
           </button>
         </div>
       </div>
