@@ -14,11 +14,11 @@ function PatientDashboard() {
       <div className="main-content">
         <Routes>
           {/* Default route */}
-          {/* <Route index element={<ViewForms />} /> */}
+          <Route index element={<ViewForms />} />
           <Route path="ViewForms" element={<ViewForms />} />
           
-          {/* UpdateForms route */}
-          <Route path="UpdateForms" element={<UpdateForms />} />
+          {/* UpdateForms route
+          <Route path="UpdateForms" element={<UpdateForms />} /> */}
 
         </Routes>
       </div>

@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PatientSidebar from './PatientSidebar';
 import UpdateForms from './UpdateForms';
 import './ViewForms.css';
-import './PatientSidebar.css';
 
 const ViewForms = () => {
   const [activeTab, setActiveTab] = useState('medical');
@@ -11,15 +10,51 @@ const ViewForms = () => {
     allergies: '',
     medications: [],
     paternal_history: '',
-    maternal_history: ''
+    maternal_history: '',
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleUpdateFormSave = (updatedData) => {
-    setMedicalData(updatedData);
-    setIsEditing(false);
+  // Simulated API call - replace with actual API endpoint
+  const saveUserMedicalData = async (data) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Simulate API call 
+      const response = await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            success: true,
+            data: data
+          });
+        }, 1000);
+      });
+
+      if (response.success) {
+        setMedicalData(data);
+        setIsEditing(false);
+        return response;
+      } else {
+        throw new Error('Failed to save medical data');
+      }
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  const handleUpdateFormSave = async (updatedData) => {
+    try {
+      await saveUserMedicalData(updatedData);
+    } catch (error) {
+      console.error('Save failed:', error);
+    }
+  };
+
+  // Rest of the component remains the same as in the previous implementation
   const renderMedicalRecords = () => (
     <div className="records-container">
       <div className="records-header">
@@ -27,10 +62,12 @@ const ViewForms = () => {
         <button 
           className="edit-button" 
           onClick={() => setIsEditing(true)}
+          disabled={isLoading}
         >
           Edit
         </button>
       </div>
+      {error && <div className="error-message">{error}</div>}
       <div className="record-grid">
         <div className="record-item">
           <div className="record-label">Chronic Conditions</div>
@@ -98,15 +135,15 @@ const ViewForms = () => {
           <div className="profile-header">
             <h1>My Medical Information</h1>
           </div>
-          
+
           <div className="form-navigation">
-            <button 
+            <button
               className={`nav-button ${activeTab === 'medical' ? 'active' : ''}`}
               onClick={() => setActiveTab('medical')}
             >
               Medical Records
             </button>
-            <button 
+            <button
               className={`nav-button ${activeTab === 'family' ? 'active' : ''}`}
               onClick={() => setActiveTab('family')}
             >
@@ -115,15 +152,15 @@ const ViewForms = () => {
           </div>
 
           {isEditing ? (
-            <UpdateForms 
+            <UpdateForms
               onSave={handleUpdateFormSave}
               initialData={medicalData}
-              onCancel={() => setIsEditing(false)}
+              isLoading={isLoading}
             />
+          ) : activeTab === 'medical' ? (
+            renderMedicalRecords()
           ) : (
-            activeTab === 'medical' 
-              ? renderMedicalRecords() 
-              : renderFamilyHistory()
+            renderFamilyHistory()
           )}
         </div>
       </div>
