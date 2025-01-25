@@ -5,6 +5,6 @@ const roleMiddleware = require('../middlewares/roleMiddleware');
 
 const router = express.Router();
 
-router.get('/', authMiddleware, roleMiddleware(['admin']), getLogs);
+router.get('/', authMiddleware, roleMiddleware('admin'), getLogs);
 
 module.exports = router;
