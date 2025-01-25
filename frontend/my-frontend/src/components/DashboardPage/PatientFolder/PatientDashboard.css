@@ -1,0 +1,60 @@
+<<<<<<< HEAD
+/* General Dashboard Layout */
+.dashboard-container {
+    display: flex; /* Create a flexible layout */
+    height: 100vh; /* Full viewport height */
+  }
+  
+  
+  
+  /* Main Content Area */
+  .dashboard-main-content {
+    margin-left: 104px; 
+    flex: 1;
+    padding: 20px;
+    background-color: #f9f9f9; /* Light gray background */
+    overflow-y: auto; /* Allow scrolling */
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1); 
+  }
+  
+  /* Mobile-Friendly Design */
+  @media (max-width: 768px) {
+    .patientSidebar {
+      width: 100px; /* Adjust width for smaller screens */
+    }
+  
+    .main-content {
+      margin-left: 100px; /* Adjust margin to match sidebar width */
+    }
+  
+    .patientSidebar a {
+      font-size: 14px; /* Reduce font size for smaller screens */
+    }
+=======
+.dashboard-container {
+    display: flex; /* Set up a flex container */
+  }
+  
+  .sidebar {
+    width: 130px; /* Sidebar width */
+    height: 100vh; /* Full height of the viewport */
+    background-color: #6c4c94;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+    position: fixed; /* Fix the sidebar to the viewport */
+    top: 0;
+    left: 0;
+    overflow-y: auto; /* Add scrolling if content overflows */
+    z-index: 100; /* Ensure it's above other content */
+  }
+  
+  .main-content {
+    margin-left: 130px; /* Offset by the sidebar width */
+    padding: 20px;
+    flex: 1;
+    background-color: #f5f5f5; /* Optional: Set a background color for the content area */
+>>>>>>> 237172b083080fd21c4a7626ba8ef4674dd2135f
+  }
+  

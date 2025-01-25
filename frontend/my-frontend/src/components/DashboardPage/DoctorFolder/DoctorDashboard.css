@@ -1,0 +1,12 @@
+.dashboard-container {
+    display: flex; /* Set up a flex container */
+  }
+  
+
+  .doctor-main-content {
+    margin-left: 104px; /* Offset by the sidebar width */
+    padding: 20px;
+    flex: 1;
+    background-color: #f5f5f5; /* Optional: Set a background color for the content area */
+  }
+  
