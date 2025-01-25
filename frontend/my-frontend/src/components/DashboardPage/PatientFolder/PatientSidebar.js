@@ -1,23 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-<<<<<<< Updated upstream
-import "./Sidebar.css"; // Sidebar-specific CSS file
-import logo from "../../Images/logo.svg";
-import logoutIcon from "../../Images/Logout.svg";
-import requests from "../../Images/requests.svg";
-import listIcon from "../../Images/List.svg";
-
-const Sidebar = () => {
-  const navigate = useNavigate(); // Initialize the navigate function
-
-  // Navigation handlers
-  const handleRequestsNavigation = () => {
-    navigate("/DoctorDashboard"); // Navigate to DoctorDashboard default route
-  };
-
-  const handleConfirmedPatientsNavigation = () => {
-    navigate("/DoctorDashboard/ConfirmedPatients"); // Navigate to ConfirmedPatients
-=======
 import "./PatientSidebar.css"; // Sidebar-specific CSS file
 import logo from "../../../Images/logo.svg";
 import logoutIcon from "../../../Images/Logout.svg";
@@ -33,8 +15,7 @@ const PatientSidebar = () => {
   };
 
   const handleUpdateNavigation = () => {
-    navigate("/PatientDashboard/UpdateForms"); // Navigate to ConfirmedPatients
->>>>>>> Stashed changes
+    navigate("/PatientDashboard/UpdateForms"); // Navigate to Update
   };
 
   return (
@@ -46,21 +27,13 @@ const PatientSidebar = () => {
         <div className="top-menu">
           <button
             className="menu-item"
-<<<<<<< Updated upstream
-            onClick={handleRequestsNavigation}
-=======
             onClick={handleUpdateNavigation}
->>>>>>> Stashed changes
           >
             <img src={requests} alt="Requests" className="menu-icon" />
           </button>
           <button
             className="menu-item"
-<<<<<<< Updated upstream
-            onClick={handleConfirmedPatientsNavigation}
-=======
             onClick={handleViewNavigation}
->>>>>>> Stashed changes
           >
             <img src={listIcon} alt="Confirmed Patients" className="menu-icon" />
           </button>
@@ -75,8 +48,4 @@ const PatientSidebar = () => {
   );
 };
 
-<<<<<<< Updated upstream
-export default Sidebar;
-=======
 export default PatientSidebar;
->>>>>>> Stashed changes

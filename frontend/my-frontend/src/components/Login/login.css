@@ -1,50 +1,94 @@
-body {
+/* Scoped Login Page Styles */
+.login-container {
   font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
   background-color: #f4f4f4;
   color: #333;
-}
-
-main {
-  max-width: 800px;
-  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
   padding: 20px;
 }
 
-form {
+.login-box {
+  max-width: 400px;
+  width: 100%;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-title {
+  font-size: 24px;
+  color: #7b4397;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-form {
   display: flex;
   flex-direction: column;
 }
 
-form label {
-  margin-bottom: 10px;
-  color: #7b4397;
+.login-label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
 }
 
-form input, button {
-  margin-bottom: 20px;
-  padding: 10px;
-  border: none;
+.login-input {
+  margin-bottom: 15px;
+  padding: 12px;
+  border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 1em;
+  background-color: #f9f9f9;
+  transition: border 0.3s;
 }
 
-form input[type="submit"], button {
+.login-input:focus {
+  border-color: #7b4397;
+  outline: none;
+}
+
+.login-submit {
   background-color: #7b4397;
   color: #fff;
+  font-size: 1em;
+  font-weight: bold;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-main {
-  width: 700px;
+.login-submit:hover {
+  background-color: #602c80;
 }
 
-main p {
-  margin-top: 10px;
+.login-footer {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9em;
+  color: #666;
 }
 
-main a {
+.login-footer a {
   color: #7b4397;
   text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.login-footer a:hover {
+  color: #602c80;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .login-box {
+    padding: 20px;
+  }
 }

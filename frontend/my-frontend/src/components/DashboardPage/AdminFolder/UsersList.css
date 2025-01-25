@@ -1,0 +1,228 @@
+/* List Styling */
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+}
+
+.filters {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  background-color: #fff;
+  border-radius: 6px;
+  padding: 20px;
+  gap: 20px;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.usertype {
+  font-weight: bold;
+}
+
+.search {
+  font-weight: bold;
+}
+
+/* Individual User Item Styling */
+.user-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-left: 15px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user-name {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.user-email {
+  font-size: 1em;
+  color: #7b4397;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.delete-button {
+  background-color: #6c4c94;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.create-user {
+  width: 15vh;
+  bottom: 50px;
+  right: 50px;
+  position: fixed;
+  background-color: #6c4c94;
+  color: #fff;
+  border: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  margin: 0;
+  cursor: pointer;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.create-user:hover {
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
+  transform: scale(1.01);
+}
+
+/* Overlay to cover the screen */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  animation: fadeInOverlay 0.3s ease;
+}
+
+/* Smooth fade-in effect for the overlay */
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Centered popup with smooth animation */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  max-width: 400px;
+  width: 90%;
+  z-index: 1000;
+  animation: fadeInPopup 0.3s ease;
+}
+
+/* Smooth fade-in animation for popup */
+@keyframes fadeInPopup {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.popup h3 {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+label {
+  font-size: 1em;
+  font-weight: 500;
+  color: #333;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 1em;
+  color: #555;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus {
+  border-color: #6c4c94;
+  outline: none;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.popup-actions button {
+  padding: 12px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 48%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Save button styles */
+.popup-actions button:first-child {
+  background-color: #28a745;
+  color: white;
+}
+
+.popup-actions button:first-child:hover {
+  background-color: #218838;
+  transform: scale(1.05);
+}
+
+/* Cancel button styles */
+.popup-actions button:last-child {
+  background-color: #dc3545;
+  color: white;
+}
+
+.popup-actions button:last-child:hover {
+  background-color: #c82333;
+  transform: scale(1.05);
+}

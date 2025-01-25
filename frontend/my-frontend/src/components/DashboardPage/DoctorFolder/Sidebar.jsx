@@ -6,7 +6,7 @@ import logoutIcon from "../../../Images/Logout.svg";
 import requests from "../../../Images/requests.svg";
 import listIcon from "../../../Images/List.svg";
 
-const Sidebar = () => {
+const AdminSidebar = () => {
   const navigate = useNavigate(); // Initialize the navigate function
 
   // Navigation handlers
@@ -18,8 +18,12 @@ const Sidebar = () => {
     navigate("/DoctorDashboard/ConfirmedPatients"); // Navigate to ConfirmedPatients
   };
 
+  const handleLogoutNagvigation = () => {
+    navigate("/"); // Navigate to the default route
+  };
+
   return (
-    <div className="sidebar">
+    <div className="doctor-sidebar">
       <div className="logo">
         <img src={logo} alt="Logo" />
       </div>
@@ -40,7 +44,7 @@ const Sidebar = () => {
         </div>
         <div className="bottom-menu">
           <button className="menu-item">
-            <img src={logoutIcon} alt="Logout" className="menu-icon" />
+            <img src={logoutIcon} alt="Logout" className="menu-icon" onClick={handleLogoutNagvigation}/>
           </button>
         </div>
       </div>
@@ -48,4 +52,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default AdminSidebar;
