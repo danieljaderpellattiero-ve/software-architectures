@@ -1,14 +1,7 @@
-.logs-list {
-  padding: 20px;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
 .logs-title {
-  font-size: 2rem;
+  font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
-  text-align: left;
 }
 
 .logs-table {
@@ -19,18 +12,21 @@
 .logs-table th,
 .logs-table td {
   border: 1px solid #ccc;
-  padding: 15px; /* Увеличено для более просторного отображения */
+  padding: 10px;
   text-align: left;
 }
 
-.logs-table th {
-  font-weight: bold;
+.logs-table th.sortable {
+  cursor: pointer;
+  position: relative;
 }
 
-.logs-table tr:nth-child(even) {
-  background-color: #fff; /* Убрано серое выделение */
+.logs-table th.sortable:hover {
+  text-decoration: underline;
 }
 
-.logs-table tr:hover {
-  background-color: #f9f9f9; /* Легкое выделение при наведении */
+.logs-table th.sortable::after {
+  content: '';
+  margin-left: 5px;
+  color: #999;
 }
