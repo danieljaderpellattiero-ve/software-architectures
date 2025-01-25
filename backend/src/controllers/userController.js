@@ -53,7 +53,46 @@ exports.verify2FA = async (req, res) => {
   }
 };
 
+
+exports.registerPatient = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    // Проверка обязательных полей
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Проверка существования email
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email is already in use' });
+    }
+
+    // Хэширование пароля
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Создание пользователя с ролью patient
+    const user = new User({
+      name,
+      email,
+      password: hashedPassword,
+      role: 'patient', // Роль по умолчанию
+    });
+
+    await user.save();
+    res.status(201).json({ message: 'Patient registered successfully', user });
+  } catch (error) {
+    console.error('Error registering patient:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
 // Create user
+// src/controllers/userController.js
+
 exports.createUser = async (req, res) => {
   try {
     const { name, email, role, password } = req.body;
@@ -63,20 +102,16 @@ exports.createUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({
-      name,
-      email,
-      role,
-      password: hashedPassword,
-    });
+    const user = await User.create({ name, email, role, password: hashedPassword });
 
-    await user.save();
     res.status(201).json({ message: 'User created successfully', user });
   } catch (error) {
-    console.error('Error during user creation:', error.message);
-    res.status(400).json({ error: error.message });
+    console.error('Error creating user:', error.message);
+    res.status(500).json({ error: error.message });
   }
 };
+
+
 
 // Login user
 exports.loginUser = async (req, res) => {
