@@ -35,7 +35,7 @@ const UsersList = () => {
         Add User
       </button>
 
-      <div className="filters">
+      <div className="controls">
         <select
           className="filter-select"
           value={filter}
@@ -98,33 +98,33 @@ const UsersList = () => {
         <div className="modal-overlay" onClick={() => setIsAddUserModalOpen(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Add New User</h3>
-            <div className="modal-content">
-              <label>
-                Name *:
+            <form className="modal-form">
+              <label className="modal-label">
+                <span>Name <span className="required">*</span>:</span>
                 <input
                   type="text"
                   value={newUser.name}
                   onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
                 />
               </label>
-              <label>
-                Email *:
+              <label className="modal-label">
+                <span>Email <span className="required">*</span>:</span>
                 <input
                   type="email"
                   value={newUser.email}
                   onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                 />
               </label>
-              <label>
-                Date of Birth *:
+              <label className="modal-label">
+                <span>Date of Birth <span className="required">*</span>:</span>
                 <input
                   type="date"
                   value={newUser.dob}
                   onChange={(e) => setNewUser({ ...newUser, dob: e.target.value })}
                 />
               </label>
-              <label>
-                Type *:
+              <label className="modal-label">
+                <span>Type <span className="required">*</span>:</span>
                 <select
                   value={newUser.type}
                   onChange={(e) => setNewUser({ ...newUser, type: e.target.value })}
@@ -133,10 +133,10 @@ const UsersList = () => {
                   <option value="Patient">Patient</option>
                 </select>
               </label>
-            </div>
+            </form>
             <div className="modal-actions">
-              <button onClick={handleAddUser}>Save</button>
-              <button onClick={() => setIsAddUserModalOpen(false)}>Cancel</button>
+              <button className="save-button" onClick={handleAddUser}>Save</button>
+              <button className="cancel-button" onClick={() => setIsAddUserModalOpen(false)}>Cancel</button>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@ const UsersList = () => {
         <div className="modal-overlay" onClick={() => setSelectedUser(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>User Information</h3>
-            <div className="user-info-modal">
+            <div className="modal-user-info">
               <p><strong>Name:</strong> {selectedUser.name}</p>
               <p><strong>Email:</strong> {selectedUser.email}</p>
               <p><strong>Type:</strong> {selectedUser.type}</p>
