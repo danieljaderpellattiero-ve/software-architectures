@@ -57,4 +57,4 @@ def handle_image():
         return jsonify({"error": "Gemini API error: " + str(api_error)}), 500
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=3050, debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=False)
