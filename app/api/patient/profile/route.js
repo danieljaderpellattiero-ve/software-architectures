@@ -1,25 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/config/db';
+import User from '@/models/User';
 import mongoose from 'mongoose';
-import User from '@/models/User'; // Import the User model
-
-// Define the Patient schema
-const patientSchema = new mongoose.Schema({
-  userId: { type: String, required: true },
-  firstName: String,
-  surname: String,
-  nationalCode: String,
-  dateOfBirth: Date,
-  educationLevel: String,
-  email: String,
-  phoneNumber: String,
-  phoneCode: String,
-  country: String,
-  city: String
-});
-
-// Create the model if it doesn't exist
-const Patient = mongoose.models.Patient || mongoose.model('Patient', patientSchema);
 
 export async function GET(request) {
   try {
@@ -27,52 +9,46 @@ export async function GET(request) {
     await connectDB();
     console.log('Database connected successfully');
     
-    // TODO: Replace with actual user ID from your authentication system
-    const userId = "123"; // <<< GET ACTUAL USER ID HERE
+    // Get user ID from the header set by middleware
+    const userId = request.headers.get('userId');
     
-    console.log('Fetching patient with userId:', userId);
-    let patient = await Patient.findOne({ userId });
-    
-    if (!patient) {
-      console.log('Patient not found, creating new patient record');
-      
-      // Fetch user data using the userId
-      const user = await User.findById(userId); // Assuming userId is the User document's _id
-
-      let firstName = '';
-      let surname = '';
-      let email = '';
-      let phoneNumber = '';
-
-      if (user) {
-        // Attempt to split the name into first and last name
-        const nameParts = user.name ? user.name.split(' ') : [];
-        firstName = nameParts[0] || '';
-        surname = nameParts.slice(1).join(' ') || '';
-        email = user.email || '';
-        phoneNumber = user.phoneNumber || '';
-      } else {
-          console.warn(`User not found for userId: ${userId}. Creating patient profile with empty data.`);
-      }
-
-      // Create a new patient record, pre-filling fields from user data
-      patient = await Patient.create({
-        userId,
-        firstName,
-        surname,
-        nationalCode: '',
-        dateOfBirth: '',
-        educationLevel: '',
-        email,
-        phoneNumber,
-        phoneCode: '+98',
-        country: '',
-        city: ''
-      });
-      console.log('New patient record created with user data:', patient);
+    if (!userId) {
+       // This case should ideally not be reached if middleware is configured correctly for this route
+       console.warn('API Profile GET: userId header not found');
+       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
     
-    return NextResponse.json(patient);
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.warn('API Profile GET: Invalid user ID format from header', userId);
+      return NextResponse.json({ error: 'Invalid user ID format' }, { status: 400 });
+    }
+    
+    console.log('API Profile GET: Fetching user with userId:', userId);
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      console.warn(`API Profile GET: User not found for userId: ${userId}.`);
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+    
+    // Extract profile data from the user document
+    const profileData = {
+      firstName: user.name?.split(' ')[0] || '', // Split name into first name
+      surname: user.name?.split(' ').slice(1).join(' ') || '', // Rest of the name as surname
+      nationalCode: user.codiceFiscale || '',
+      dateOfBirth: user.dateOfBirth || '',
+      educationLevel: user.educationLevel || '',
+      email: user.email || '',
+      phoneNumber: user.phoneNumber || '',
+      phoneCode: '+98', // Default phone code
+      country: user.country || '',
+      city: user.city || '',
+      homeAddress: user.homeAddress || '',
+      medicalData: user.medicalData || {}
+    };
+    
+    console.log('API Profile GET: Profile data fetched successfully');
+    return NextResponse.json(profileData);
   } catch (error) {
     console.error('Error in GET /api/patient/profile:', error);
     return NextResponse.json({ 
@@ -88,21 +64,54 @@ export async function PUT(request) {
     await connectDB();
     console.log('Database connected successfully');
     
+    // Get user ID from the header set by middleware
+    const userId = request.headers.get('userId');
+
+    if (!userId) {
+       // This case should ideally not be reached if middleware is configured correctly for this route
+       console.warn('API Profile PUT: userId header not found');
+       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.warn('API Profile PUT: Invalid user ID format from header', userId);
+      return NextResponse.json({ error: 'Invalid user ID format' }, { status: 400 });
+    }
+
     const data = await request.json();
-    console.log('Received data:', data);
+    console.log('API Profile PUT: Received data:', data);
     
-    // TODO: Replace with actual user ID from your authentication system
-    const userId = "123"; // <<< GET ACTUAL USER ID HERE
-    
-    console.log('Updating patient with userId:', userId);
-    const patient = await Patient.findOneAndUpdate(
-      { userId },
-      { $set: data },
-      { new: true, upsert: true }
+    // Prepare the update data - ensure we only update fields present in the form data
+    const updateData = {};
+    if (data.firstName || data.surname) { // Update name only if first or surname is provided
+        updateData.name = `${data.firstName || ''} ${data.surname || ''}`.trim();
+    }
+    if (data.email !== undefined) updateData.email = data.email;
+    if (data.phoneNumber !== undefined) updateData.phoneNumber = data.phoneNumber;
+    if (data.nationalCode !== undefined) updateData.codiceFiscale = data.nationalCode; // Map nationalCode to codiceFiscale
+    if (data.homeAddress !== undefined) updateData.homeAddress = data.homeAddress; // Assuming homeAddress is part of profile updates
+    if (data.dateOfBirth !== undefined) updateData.dateOfBirth = data.dateOfBirth;
+    if (data.educationLevel !== undefined) updateData.educationLevel = data.educationLevel;
+    if (data.country !== undefined) updateData.country = data.country;
+    if (data.city !== undefined) updateData.city = data.city;
+    // Handle medicalData updates carefully if needed, perhaps merging or replacing
+    if (data.medicalData !== undefined) updateData.medicalData = data.medicalData;
+
+
+    console.log('API Profile PUT: Updating user with userId:', userId, ', updateData:', updateData);
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateData }, // Use $set to update specific fields
+      { new: true, runValidators: true } // new: true returns the updated doc, runValidators: true applies schema validators
     );
     
-    console.log('Patient updated successfully:', patient);
-    return NextResponse.json({ success: true, patient });
+    if (!user) {
+      console.warn(`API Profile PUT: User not found for userId: ${userId}.`);
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+    
+    console.log('API Profile PUT: User updated successfully:', user);
+    return NextResponse.json({ success: true, user });
   } catch (error) {
     console.error('Error in PUT /api/patient/profile:', error);
     return NextResponse.json({ 

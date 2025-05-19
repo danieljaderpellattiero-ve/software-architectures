@@ -34,6 +34,23 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide a home address']
   },
+  dateOfBirth: {
+    type: Date,
+    default: null
+  },
+  educationLevel: {
+    type: String,
+    enum: ['', 'software', 'engineering', 'medicine'],
+    default: ''
+  },
+  country: {
+    type: String,
+    default: ''
+  },
+  city: {
+    type: String,
+    default: ''
+  },
   medicalData: {
     height: {
       type: Number,

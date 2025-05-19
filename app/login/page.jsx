@@ -9,6 +9,7 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'; // Make sur
 // import TwoFactorAuth from "@/components/TwoFactorAuth";
 
 function LoginPage() {
+  console.log('LoginPage: Component rendering'); // Added log
   const router = useRouter(); // Initialize router
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,6 +22,7 @@ function LoginPage() {
 
   // Basic form validation
   const validateForm = () => {
+    console.log('LoginPage: validateForm called'); // Added log
     setError(""); // Clear previous errors
     if (!email || !password) {
       setError("Please fill in both email and password fields.");
@@ -36,6 +38,7 @@ function LoginPage() {
 
   // Handle login submission
   const handleLogin = async (e) => {
+    console.log('LoginPage: handleLogin called'); // Added log
     e.preventDefault(); // Prevent default HTML form submission
 
     if (!validateForm()) {
@@ -46,7 +49,7 @@ function LoginPage() {
     setError(""); // Clear errors before new attempt
 
     try {
-      console.log('Attempting login via fetch with email:', email);
+      console.log('LoginPage: Attempting login via fetch'); // Added log
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -61,21 +64,21 @@ function LoginPage() {
       });
 
       const data = await res.json(); // Parse the JSON response body
-      console.log('Full login response from API:', data);
+      console.log('LoginPage: Full login response from API:', data); // Added log
 
       // Check if response status is OK (2xx) AND if the API indicates success
       if (res.ok && data.success) {
-        console.log('Login successful via API, user role:', data.user.role);
+        console.log('LoginPage: Login successful, redirecting'); // Added log
         const redirectPath = data.redirectTo; // Get redirect path from API response
 
         if (!redirectPath) {
-             console.error("API response missing redirectTo path!");
+             console.error("LoginPage: API response missing redirectTo path!"); // Added log
              setError("Login succeeded but redirection failed. Please contact support.");
              setIsLoading(false);
              return;
         }
 
-        console.log('Attempting navigation via router.push to:', redirectPath);
+        console.log('LoginPage: Attempting navigation via router.push to:', redirectPath); // Added log
 
         // --- THE FIX: Use router.push for client-side navigation ---
         router.push(redirectPath);
@@ -87,12 +90,12 @@ function LoginPage() {
 
       } else {
         // Handle login failure (API returned error status or data.success was false)
-        console.log('Login failed:', data.message || `Server responded with status ${res.status}`);
+        console.log('LoginPage: Login failed:', data.message || `Server responded with status ${res.status}`); // Added log
         setError(data.message || 'Invalid username or password.'); // Use message from API if available
       }
     } catch (err) {
       // Handle network errors or errors during fetch/JSON parsing
-      console.error('Login fetch/processing error:', err);
+      console.error('LoginPage: Login fetch/processing error:', err); // Added log
       setError('An unexpected error occurred. Check your connection and try again.');
     } finally {
       // Ensure loading state is turned off regardless of outcome (unless navigation occurs)
@@ -104,6 +107,7 @@ function LoginPage() {
   };
 
   // JSX for the Login Form
+  console.log('LoginPage: Rendering JSX'); // Added log
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">

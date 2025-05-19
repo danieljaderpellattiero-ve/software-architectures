@@ -2,17 +2,20 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+// import { useAuth } from '@/context/AuthContext'; // Removed useAuth
 
 const PatientDashboardLandingPage = () => {
   const router = useRouter();
+  // const { user, loading } = useAuth(); // Removed useAuth
 
   useEffect(() => {
-    // Redirect to the default patient profile page
+    // Redirect immediately to the default patient profile page
+    // Authentication is handled by middleware
     router.push('/patientDashboard/profile');
   }, [router]);
 
-  // You can return a loading spinner or null while redirecting
-  return null; 
+  // Render null while redirecting
+  return null;
 };
 
 export default PatientDashboardLandingPage;

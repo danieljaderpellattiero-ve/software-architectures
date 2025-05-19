@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect } from "react";
 import profile from "@/public/Profile.svg";
+import Cookies from 'js-cookie';
 
 const PatientProfile = () => {
   const [isEditable, setIsEditable] = useState(false);
@@ -26,6 +27,7 @@ const PatientProfile = () => {
     try {
       setLoading(true);
       setError(null);
+
       const response = await fetch('/api/patient/profile');
       const data = await response.json();
       
