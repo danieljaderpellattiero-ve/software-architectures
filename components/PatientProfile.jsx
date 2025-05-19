@@ -1,19 +1,84 @@
 'use client'
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import profile from "@/public/Profile.svg";
 
 const PatientProfile = () => {
   const [isEditable, setIsEditable] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    surname: '',
+    nationalCode: '',
+    dateOfBirth: '',
+    educationLevel: '',
+    email: '',
+    phoneNumber: '',
+    country: '',
+    city: ''
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchPatientData();
+  }, []);
+
+  const fetchPatientData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch('/api/patient/profile');
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch patient data');
+      }
+      
+      setFormData(data);
+    } catch (err) {
+      console.error('Error fetching patient data:', err);
+      setError(err.message || 'An error occurred while fetching patient data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEdit = () => {
-    setIsEditable(true); // Enable edit mode
+    setIsEditable(true);
   };
 
-  const handleSave = () => {
-    setIsEditable(false); // Disable edit mode
-    // Optionally, add logic here to save data
-    console.log("Data saved!");
+  const handleSave = async () => {
+    try {
+      const response = await fetch('/api/patient/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update patient data');
+      }
+
+      setIsEditable(false);
+      // Optionally show a success message
+      console.log("Data saved successfully!");
+    } catch (err) {
+      setError(err.message);
+      // Optionally show an error message to the user
+    }
   };
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  if (loading) return <div className="text-center p-4">Loading...</div>;
+  if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
   return (
     <div className="bg-gray-100 p-6 rounded-md shadow-md">
@@ -23,7 +88,7 @@ const PatientProfile = () => {
           <img src={profile} alt="Profile" className="w-full h-full object-cover" />
         </div>
         <div className="flex-1">
-          <h2 className="text-xl font-semibold text-purple-700">John Doe</h2>
+          <h2 className="text-xl font-semibold text-purple-700">{`${formData.firstName} ${formData.surname}`}</h2>
           <p className="text-gray-600">
             Your account is ready, you can now request an appointment from the appointments page.
           </p>
@@ -55,7 +120,8 @@ const PatientProfile = () => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="firstName"
             type="text"
-            placeholder="Enter Value"
+            value={formData.firstName}
+            onChange={handleInputChange}
             readOnly={!isEditable}
           />
         </div>
@@ -67,7 +133,8 @@ const PatientProfile = () => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="surname"
             type="text"
-            placeholder="Enter Value"
+            value={formData.surname}
+            onChange={handleInputChange}
             readOnly={!isEditable}
           />
         </div>
@@ -79,7 +146,8 @@ const PatientProfile = () => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="nationalCode"
             type="text"
-            placeholder="Enter Value"
+            value={formData.nationalCode}
+            onChange={handleInputChange}
             readOnly={!isEditable}
           />
         </div>
@@ -91,6 +159,8 @@ const PatientProfile = () => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="dateOfBirth"
             type="date"
+            value={formData.dateOfBirth}
+            onChange={handleInputChange}
             readOnly={!isEditable}
           />
         </div>
@@ -101,6 +171,8 @@ const PatientProfile = () => {
           <select
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="educationLevel"
+            value={formData.educationLevel}
+            onChange={handleInputChange}
             disabled={!isEditable}
           >
             <option value="">Select</option>
@@ -117,7 +189,8 @@ const PatientProfile = () => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="email"
             type="email"
-            placeholder="Enter Value"
+            value={formData.email}
+            onChange={handleInputChange}
             readOnly={!isEditable}
           />
         </div>
@@ -128,6 +201,8 @@ const PatientProfile = () => {
           <div className="flex">
             <select
               className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-20 mr-2"
+              value={formData.phoneCode || '+98'}
+              onChange={(e) => setFormData(prev => ({ ...prev, phoneCode: e.target.value }))}
               disabled={!isEditable}
             >
               <option value="+98">+98</option>
@@ -137,7 +212,8 @@ const PatientProfile = () => {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="phoneNumber"
               type="text"
-              placeholder="9120000000"
+              value={formData.phoneNumber}
+              onChange={handleInputChange}
               readOnly={!isEditable}
             />
           </div>
@@ -149,6 +225,8 @@ const PatientProfile = () => {
           <select
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="country"
+            value={formData.country}
+            onChange={handleInputChange}
             disabled={!isEditable}
           >
             <option value="">Select</option>
@@ -164,7 +242,8 @@ const PatientProfile = () => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="city"
             type="text"
-            placeholder="Enter Value"
+            value={formData.city}
+            onChange={handleInputChange}
             readOnly={!isEditable}
           />
         </div>

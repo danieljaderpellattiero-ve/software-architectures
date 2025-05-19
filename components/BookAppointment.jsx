@@ -1,16 +1,39 @@
-import React from "react";
+'use client';
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 
 import doctorImage from "@/public/doctorImage.svg"; // Replace with an actual path to your image
 
 const BookAppointment = () => {
-  const doctors = [
-    { id: 1, name: "Dr. Jane Cooper" },
-    { id: 2, name: "Dr. John Smith" },
-    { id: 3, name: "Dr. Lisa Adams" },
-    { id: 4, name: "Dr. Mark Lee" },
-    // Add more doctors here
-  ];
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch('/api/doctors');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setDoctors(data);
+      } catch (err) {
+        console.error('Error fetching doctors:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []); // Empty dependency array means this effect runs once on mount
+
+  if (loading) return <div className="text-center p-4">Loading doctors...</div>;
+  if (error) return <div className="text-red-500 p-4">Error loading doctors: {error}</div>;
+  if (doctors.length === 0) return <div className="text-center p-4">No doctors available.</div>;
 
   return (
     <div className="p-5 bg-gray-100 rounded-md shadow-md">
@@ -18,7 +41,7 @@ const BookAppointment = () => {
       <div className="flex flex-col gap-5">
         {doctors.map((doctor) => (
           <div
-            key={doctor.id}
+            key={doctor._id} // Use _id from MongoDB as key
             className="flex items-center justify-between p-3 bg-white rounded-md shadow-sm max-w-full"
           >
             <img

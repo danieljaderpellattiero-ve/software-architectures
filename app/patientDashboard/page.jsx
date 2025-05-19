@@ -1,13 +1,18 @@
-import React from 'react'
-import PatientSidebar from '@/components/PatientSidebar'
-import BookAppointment from '@/components/BookAppointment'
-const page = () => {
-  return (
-<div className="flex h-screen">
-      <PatientSidebar className="w-fit" />
-      <div className="flex-1 overflow-y-auto bg-gray-100 p-6">
-      </div>
-    </div>  )
-}
+'use client';
 
-export default page
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+const PatientDashboardLandingPage = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to the default patient profile page
+    router.push('/patientDashboard/profile');
+  }, [router]);
+
+  // You can return a loading spinner or null while redirecting
+  return null; 
+};
+
+export default PatientDashboardLandingPage;
