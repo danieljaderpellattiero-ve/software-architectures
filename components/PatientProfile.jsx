@@ -16,8 +16,10 @@ const PatientProfile = () => {
     country: '',
     city: ''
   });
+  const [originalData, setOriginalData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
 
   useEffect(() => {
     fetchPatientData();
@@ -27,15 +29,30 @@ const PatientProfile = () => {
     try {
       setLoading(true);
       setError(null);
+      setSuccessMessage(null);
 
       const response = await fetch('/api/patient/profile');
       const data = await response.json();
       
+      console.log('Frontend PatientProfile: Data received from API for state update:', data);
+      console.log('Frontend PatientProfile: Country value from API:', data.country);
+
       if (!response.ok) {
         throw new Error(data.error || 'Failed to fetch patient data');
       }
       
+      // Format the date if it exists
+      if (data.dateOfBirth) {
+        const date = new Date(data.dateOfBirth);
+        if (!isNaN(date.getTime())) {
+          data.dateOfBirth = date.toISOString().split('T')[0];
+        }
+      }
+      
       setFormData(data);
+      console.log('Frontend PatientProfile: formData state after setting:', data);
+      console.log('Frontend PatientProfile: Country value in formData after setting:', data.country);
+      setOriginalData(data); // Store original data for cancel functionality
     } catch (err) {
       console.error('Error fetching patient data:', err);
       setError(err.message || 'An error occurred while fetching patient data');
@@ -46,28 +63,88 @@ const PatientProfile = () => {
 
   const handleEdit = () => {
     setIsEditable(true);
+    setError(null);
+    setSuccessMessage(null);
+  };
+
+  const handleCancel = () => {
+    setFormData(originalData); // Restore original data
+    setIsEditable(false);
+    setError(null);
+    setSuccessMessage(null);
+  };
+
+  const validateForm = () => {
+    if (!formData.firstName.trim()) {
+      setError('First name is required');
+      return false;
+    }
+    if (!formData.surname.trim()) {
+      setError('Surname is required');
+      return false;
+    }
+    if (!formData.email.trim()) {
+      setError('Email is required');
+      return false;
+    }
+    if (!formData.phoneNumber.trim()) {
+      setError('Phone number is required');
+      return false;
+    }
+    return true;
   };
 
   const handleSave = async () => {
     try {
+      setError(null);
+      setSuccessMessage(null);
+
+      if (!validateForm()) {
+        return;
+      }
+
+      // Capture the current form data before the async operation
+      const dataToSave = { ...formData };
+      
+      // Ensure date is in the correct format for the API
+      if (dataToSave.dateOfBirth) {
+        const date = new Date(dataToSave.dateOfBirth);
+        if (!isNaN(date.getTime())) {
+          dataToSave.dateOfBirth = date.toISOString();
+        }
+      }
+      
+      console.log('Frontend PatientProfile: Sending data to API:', dataToSave);
+      console.log('Frontend PatientProfile: Country value being sent to API:', dataToSave.country);
+
       const response = await fetch('/api/patient/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSave),
       });
 
+      const responseData = await response.json(); // Get response data
+      console.log('Frontend PatientProfile: Response data from PUT:', responseData);
+
       if (!response.ok) {
-        throw new Error('Failed to update patient data');
+        throw new Error(responseData.error || 'Failed to update patient data');
       }
 
+      // Optimistically update state with the data that was successfully sent
+      setFormData(dataToSave);
+      setOriginalData(dataToSave);
+      setSuccessMessage('Profile updated successfully!');
       setIsEditable(false);
-      // Optionally show a success message
-      console.log("Data saved successfully!");
+      
+      // Optionally, you can still refetch in the background to ensure consistency,
+      // but the immediate UI update comes from the optimistic state update.
+      // setTimeout(() => { fetchPatientData(); }, 1000); // Example: refetch after a delay
+
     } catch (err) {
+      console.error('Error saving patient data:', err);
       setError(err.message);
-      // Optionally show an error message to the user
     }
   };
 
@@ -82,9 +159,29 @@ const PatientProfile = () => {
   if (loading) return <div className="text-center p-4">Loading...</div>;
   if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
+  console.log('Frontend PatientProfile: Rendering with formData:', formData);
+  console.log('Frontend PatientProfile: Input values during render -');
+  console.log('  dateOfBirth:', formData.dateOfBirth);
+  console.log('  educationLevel:', formData.educationLevel);
+  console.log('  country:', formData.country);
+  console.log('  city:', formData.city);
+
   return (
     <div className="bg-gray-100 p-6 rounded-md shadow-md">
       <h1 className="text-3xl font-bold mb-5 text-gray-800">Profile</h1>
+      
+      {/* Success/Error Messages */}
+      {successMessage && (
+        <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+          {successMessage}
+        </div>
+      )}
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
+        </div>
+      )}
+
       <div className="flex gap-6 mb-8 items-center">
         <div className="w-32 h-32 rounded-full overflow-hidden shadow-sm border-4 border-purple-500">
           <img src={profile} alt="Profile" className="w-full h-full object-cover" />
@@ -96,7 +193,7 @@ const PatientProfile = () => {
           </p>
         </div>
       </div>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end gap-4 mb-4">
         {!isEditable ? (
           <button
             className="bg-purple-500 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -105,12 +202,20 @@ const PatientProfile = () => {
             Edit
           </button>
         ) : (
-          <button
-            className="bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            onClick={handleSave}
-          >
-            Save
-          </button>
+          <>
+            <button
+              className="bg-gray-500 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              onClick={handleCancel}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              onClick={handleSave}
+            >
+              Save
+            </button>
+          </>
         )}
       </div>
       <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
