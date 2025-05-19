@@ -119,5 +119,6 @@ export const config = {
      '/api/doctorDashboard/:path*',
      '/api/auth/me', // Ensure /api/auth/me is also protected by middleware
      '/api/patient/profile', // Add the patient profile API route
+     '/api/patient/request', // Add the patient request API route
   ],
 };
