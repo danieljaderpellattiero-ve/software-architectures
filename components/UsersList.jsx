@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
@@ -19,6 +20,8 @@ const UsersList = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
 
   useEffect(() => {
     fetchUsers();
@@ -89,10 +92,6 @@ const UsersList = () => {
   };
 
   const handleDeleteUser = async (userId) => {
-    if (!confirm('Are you sure you want to delete this user?')) {
-      return;
-    }
-
     try {
       const response = await fetch(`/api/admin/users/${userId}`, {
         method: 'DELETE',
@@ -179,9 +178,10 @@ const UsersList = () => {
               <td className="border border-gray-300 p-3">
                 <button
                   className="bg-red-500 text-white border-none py-1 px-3 rounded-md cursor-pointer hover:bg-red-400 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteUser(user._id);
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    setUserToDelete(user); 
+                    setIsDeleteModalOpen(true);
                   }}
                   disabled={user.role === 'admin'}
                 >
@@ -337,6 +337,20 @@ const UsersList = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onCancel={() => setIsDeleteModalOpen(false)}
+        onConfirm={async () => {
+          if (userToDelete) {
+            await handleDeleteUser(userToDelete._id);
+            setUserToDelete(null);
+          }
+          setIsDeleteModalOpen(false);
+        }}
+        userName={userToDelete?.name}
+      />
     </div>
   );
 };
