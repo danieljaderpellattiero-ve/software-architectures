@@ -28,6 +28,11 @@ const AdminSidebar = () => {
     router.push("/adminDashboard/usersManagement");
   };
 
+  const handleHomeNavigation = () => {
+    setIsLoading(true);
+    router.push("/adminDashboard");
+  };
+
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
@@ -75,8 +80,9 @@ const AdminSidebar = () => {
             alt="Logo"
             width={60}
             height={60}
-            className="rounded-full"
-          />
+            className="rounded-full cursor-pointer"
+            onClick={handleHomeNavigation}
+                      />
         </div>
         
 

@@ -1,32 +1,128 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const UsersList = () => {
-  const [users, setUsers] = useState([
-    { id: 1, name: 'John Doe', email: 'john@example.com', type: 'Doctor', dob: '1990-01-01' },
-  ]);
-  const [newUser, setNewUser] = useState({ name: '', email: '', type: 'Doctor', dob: '' });
+  const [users, setUsers] = useState([]);
+  const [newUser, setNewUser] = useState({ 
+    name: '', 
+    email: '', 
+    role: 'patient', 
+    phoneNumber: '', 
+    codiceFiscale: '', 
+    homeAddress: '',
+    password: ''
+  });
+  const [showPassword, setShowPassword] = useState(false);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('All');
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleAddUser = () => {
-    if (newUser.name && newUser.email && newUser.dob) {
-      setUsers([...users, { id: users.length + 1, ...newUser }]);
-      setNewUser({ name: '', email: '', type: 'Doctor', dob: '' });
-      setIsAddUserModalOpen(false);
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/users');
+      if (!response.ok) {
+        throw new Error('Failed to fetch users');
+      }
+      const data = await response.json();
+      // Validate and clean the data
+      const validatedUsers = data.map(user => ({
+        _id: user._id || '',
+        name: user.name || 'N/A',
+        email: user.email || 'N/A',
+        role: user.role || 'patient',
+        phoneNumber: user.phoneNumber || 'N/A',
+        codiceFiscale: user.codiceFiscale || 'N/A',
+        homeAddress: user.homeAddress || 'N/A'
+      }));
+      setUsers(validatedUsers);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching users:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDeleteUser = (id) => {
-    setUsers(users.filter((user) => user.id !== id));
+  const generateDefaultPassword = (name) => {
+    return name.slice(0, 5).toLowerCase() + '123';
+  };
+
+  const handleNameChange = (e) => {
+    const name = e.target.value;
+    setNewUser(prev => ({
+      ...prev,
+      name,
+      password: name ? generateDefaultPassword(name) : ''
+    }));
+  };
+
+  const handleAddUser = async () => {
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newUser),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add user');
+      }
+
+      // Refresh the users list
+      await fetchUsers();
+      setNewUser({ name: '', email: '', role: 'patient', phoneNumber: '', codiceFiscale: '', homeAddress: '', password: '' });
+      setIsAddUserModalOpen(false);
+    } catch (err) {
+      console.error('Error adding user:', err);
+      setError(err.message);
+    }
+  };
+
+  const handleDeleteUser = async (userId) => {
+    if (!confirm('Are you sure you want to delete this user?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete user');
+      }
+
+      // Refresh the users list
+      await fetchUsers();
+    } catch (err) {
+      console.error('Error deleting user:', err);
+      setError(err.message);
+    }
   };
 
   const filteredUsers = users.filter(
     (user) =>
-      (filter === 'All' || user.type === filter) &&
-      user.name.toLowerCase().includes(query.toLowerCase())
+      (filter === 'All' || (user.role && user.role.toLowerCase() === filter.toLowerCase())) &&
+      (user.name && user.name.toLowerCase().includes(query.toLowerCase()))
   );
+
+  if (loading) {
+    return <div className="p-5 text-center">Loading users...</div>;
+  }
+
+  if (error) {
+    return <div className="p-5 text-center text-red-500">Error: {error}</div>;
+  }
 
   return (
     <div className="p-5 font-sans pl-[120px]">
@@ -63,29 +159,29 @@ const UsersList = () => {
             <th className="border border-gray-300 p-3 text-left">№</th>
             <th className="border border-gray-300 p-3 text-left">Name</th>
             <th className="border border-gray-300 p-3 text-left">Email</th>
-            <th className="border border-gray-300 p-3 text-left">Type</th>
-            <th className="border border-gray-300 p-3 text-left">Date of Birth</th>
+            <th className="border border-gray-300 p-3 text-left">Role</th>
+            <th className="border border-gray-300 p-3 text-left">Phone Number</th>
             <th className="border border-gray-300 p-3 text-left">Actions</th>
           </tr>
         </thead>
         <tbody>
           {filteredUsers.map((user, index) => (
             <tr
-              key={user.id}
+              key={user._id}
               className="hover:bg-gray-50 cursor-pointer"
               onClick={() => setSelectedUser(user)}
             >
               <td className="border border-gray-300 p-3">{index + 1}</td>
               <td className="border border-gray-300 p-3">{user.name}</td>
               <td className="border border-gray-300 p-3">{user.email}</td>
-              <td className="border border-gray-300 p-3">{user.type}</td>
-              <td className="border border-gray-300 p-3">{user.dob}</td>
+              <td className="border border-gray-300 p-3">{user.role}</td>
+              <td className="border border-gray-300 p-3">{user.phoneNumber}</td>
               <td className="border border-gray-300 p-3">
                 <button
                   className="bg-red-500 text-white border-none py-1 px-3 rounded-md cursor-pointer hover:bg-red-400 text-sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleDeleteUser(user.id);
+                    handleDeleteUser(user._id);
                   }}
                 >
                   Delete User
@@ -113,7 +209,7 @@ const UsersList = () => {
                   type="text"
                   className="w-full py-2 px-3 border border-gray-300 rounded-md text-sm"
                   value={newUser.name}
-                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                  onChange={handleNameChange}
                 />
               </label>
               <label className="grid grid-cols-[150px_auto] items-center font-bold">
@@ -126,24 +222,60 @@ const UsersList = () => {
                 />
               </label>
               <label className="grid grid-cols-[150px_auto] items-center font-bold">
-                <span>Date of Birth <span className="text-red-500">*</span>:</span>
-                <input
-                  type="date"
+                <span>Password <span className="text-red-500">*</span>:</span>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="w-full py-2 px-3 border border-gray-300 rounded-md text-sm pr-10"
+                    value={newUser.password}
+                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </label>
+              <label className="grid grid-cols-[150px_auto] items-center font-bold">
+                <span>Role <span className="text-red-500">*</span>:</span>
+                <select
                   className="w-full py-2 px-3 border border-gray-300 rounded-md text-sm"
-                  value={newUser.dob}
-                  onChange={(e) => setNewUser({ ...newUser, dob: e.target.value })}
+                  value={newUser.role}
+                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                >
+                  <option value="doctor">Doctor</option>
+                  <option value="patient">Patient</option>
+                </select>
+              </label>
+              <label className="grid grid-cols-[150px_auto] items-center font-bold">
+                <span>Phone Number <span className="text-red-500">*</span>:</span>
+                <input
+                  type="tel"
+                  className="w-full py-2 px-3 border border-gray-300 rounded-md text-sm"
+                  value={newUser.phoneNumber}
+                  onChange={(e) => setNewUser({ ...newUser, phoneNumber: e.target.value })}
                 />
               </label>
               <label className="grid grid-cols-[150px_auto] items-center font-bold">
-                <span>Type <span className="text-red-500">*</span>:</span>
-                <select
+                <span>Codice Fiscale <span className="text-red-500">*</span>:</span>
+                <input
+                  type="text"
                   className="w-full py-2 px-3 border border-gray-300 rounded-md text-sm"
-                  value={newUser.type}
-                  onChange={(e) => setNewUser({ ...newUser, type: e.target.value })}
-                >
-                  <option value="Doctor">Doctor</option>
-                  <option value="Patient">Patient</option>
-                </select>
+                  value={newUser.codiceFiscale}
+                  onChange={(e) => setNewUser({ ...newUser, codiceFiscale: e.target.value })}
+                />
+              </label>
+              <label className="grid grid-cols-[150px_auto] items-center font-bold">
+                <span>Home Address <span className="text-red-500">*</span>:</span>
+                <input
+                  type="text"
+                  className="w-full py-2 px-3 border border-gray-300 rounded-md text-sm"
+                  value={newUser.homeAddress}
+                  onChange={(e) => setNewUser({ ...newUser, homeAddress: e.target.value })}
+                />
               </label>
             </form>
             <div className="flex justify-center gap-4 mt-5">
@@ -182,10 +314,16 @@ const UsersList = () => {
                 <strong>Email:</strong> {selectedUser.email}
               </p>
               <p>
-                <strong>Type:</strong> {selectedUser.type}
+                <strong>Role:</strong> {selectedUser.role}
               </p>
               <p>
-                <strong>Date of Birth:</strong> {selectedUser.dob}
+                <strong>Phone Number:</strong> {selectedUser.phoneNumber}
+              </p>
+              <p>
+                <strong>Codice Fiscale:</strong> {selectedUser.codiceFiscale}
+              </p>
+              <p>
+                <strong>Home Address:</strong> {selectedUser.homeAddress}
               </p>
             </div>
             <button
