@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import initializeDB from '@/config/initDB';
 import User from '@/models/User';
+import Log from '@/models/Log';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request) {
@@ -31,6 +32,14 @@ export async function POST(request) {
       homeAddress,
       medicalData,
       role
+    });
+
+    // Create log entry
+    await Log.create({
+      action: 'CREATE_USER',
+      performedBy: user._id, // The user is creating their own account
+      targetUser: user._id,
+      details: `New ${role} account created: ${email}`
     });
 
     return NextResponse.json(

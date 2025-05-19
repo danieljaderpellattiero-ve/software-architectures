@@ -1,13 +1,30 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const logSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  action: { type: String, required: true }, // Например: 'CREATE', 'UPDATE', 'DELETE'
-  resource: { type: String, required: true }, // Например: 'User', 'MedicalRecord'
-  resourceId: { type: mongoose.Schema.Types.ObjectId, required: true },
-  timestamp: { type: Date, default: Date.now },
+  action: {
+    type: String,
+    required: true,
+    enum: ['CREATE_USER', 'DELETE_USER', 'UPDATE_USER']
+  },
+  performedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  targetUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  details: {
+    type: String,
+    required: true
+  },
+  timestamp: {
+    type: Date,
+    default: Date.now
+  }
 });
 
-const Log = mongoose.model('Log', logSchema);
+const Log = mongoose.models.Log || mongoose.model('Log', logSchema);
 
-module.exports = Log;
+export default Log;

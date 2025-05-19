@@ -178,11 +178,12 @@ const UsersList = () => {
               <td className="border border-gray-300 p-3">{user.phoneNumber}</td>
               <td className="border border-gray-300 p-3">
                 <button
-                  className="bg-red-500 text-white border-none py-1 px-3 rounded-md cursor-pointer hover:bg-red-400 text-sm"
+                  className="bg-red-500 text-white border-none py-1 px-3 rounded-md cursor-pointer hover:bg-red-400 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDeleteUser(user._id);
                   }}
+                  disabled={user.role === 'admin'}
                 >
                   Delete User
                 </button>
@@ -248,6 +249,7 @@ const UsersList = () => {
                 >
                   <option value="doctor">Doctor</option>
                   <option value="patient">Patient</option>
+                  <option value="admin">Admin</option>
                 </select>
               </label>
               <label className="grid grid-cols-[150px_auto] items-center font-bold">
