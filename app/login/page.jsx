@@ -5,12 +5,14 @@ import React, { useState } from "react"; // Removed unused useEffect
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // Correct import for App Router
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'; // Make sure heroicons is installed
+import { useAuth } from '@/context/AuthContext'; // Import useAuth
 // Import TwoFactorAuth if you intend to use the modal functionality later
 // import TwoFactorAuth from "@/components/TwoFactorAuth";
 
 function LoginPage() {
   console.log('LoginPage: Component rendering'); // Added log
   const router = useRouter(); // Initialize router
+  const { login } = useAuth(); // Get login function from AuthContext
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -49,60 +51,19 @@ function LoginPage() {
     setError(""); // Clear errors before new attempt
 
     try {
-      console.log('LoginPage: Attempting login via fetch'); // Added log
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          rememberMe // Sending rememberMe state to API
-        }),
-        credentials: 'include' // Crucial for sending/receiving cookies
-      });
+      console.log('LoginPage: Attempting login via AuthContext'); // Added log
+      const success = await login(email, password);
+      console.log('LoginPage: Login result:', success); // Added log
 
-      const data = await res.json(); // Parse the JSON response body
-      console.log('LoginPage: Full login response from API:', data); // Added log
-
-      // Check if response status is OK (2xx) AND if the API indicates success
-      if (res.ok && data.success) {
-        console.log('LoginPage: Login successful, redirecting'); // Added log
-        const redirectPath = data.redirectTo; // Get redirect path from API response
-
-        if (!redirectPath) {
-             console.error("LoginPage: API response missing redirectTo path!"); // Added log
-             setError("Login succeeded but redirection failed. Please contact support.");
-             setIsLoading(false);
-             return;
-        }
-
-        console.log('LoginPage: Attempting navigation via router.push to:', redirectPath); // Added log
-
-        // --- THE FIX: Use router.push for client-side navigation ---
-        router.push(redirectPath);
-        // --- End of Fix ---
-
-        // No need to manually set isLoading to false here,
-        // as the navigation will unmount this component or trigger a transition.
-        // However, it doesn't hurt to leave the finally block.
-
-      } else {
-        // Handle login failure (API returned error status or data.success was false)
-        console.log('LoginPage: Login failed:', data.message || `Server responded with status ${res.status}`); // Added log
-        setError(data.message || 'Invalid username or password.'); // Use message from API if available
+      if (!success) {
+        setError('Invalid email or password');
       }
     } catch (err) {
       // Handle network errors or errors during fetch/JSON parsing
-      console.error('LoginPage: Login fetch/processing error:', err); // Added log
-      setError('An unexpected error occurred. Check your connection and try again.');
+      console.error('LoginPage: Login error:', err); // Added log
+      setError(err.message || 'An unexpected error occurred. Please try again.');
     } finally {
-      // Ensure loading state is turned off regardless of outcome (unless navigation occurs)
-      // If router.push starts navigation, this might run briefly before unmounting.
-       if (!router.pathname?.startsWith(data?.redirectTo)) { // Optional check if navigation started
-          setIsLoading(false);
-       }
+      setIsLoading(false);
     }
   };
 

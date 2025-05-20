@@ -9,6 +9,9 @@ export async function middleware(request) {
 
   console.log('Middleware executing for path:', pathname);
   console.log('Token found:', !!token);
+  if (token) {
+    console.log('Token value:', token.substring(0, 10) + '...');
+  }
 
   const isPublicPath = PUBLIC_PATHS.includes(pathname);
   console.log('Is public path:', isPublicPath);
@@ -18,6 +21,7 @@ export async function middleware(request) {
     try {
       const secret = new TextEncoder().encode(process.env.JWT_SECRET);
       const { payload } = await jwtVerify(token, secret);
+      console.log('Token decoded successfully:', payload);
       return payload;
     } catch (err) {
       console.log('Token verification failed:', err.message);
@@ -32,9 +36,11 @@ export async function middleware(request) {
       const decoded = await decodeToken(token);
       if (decoded) {
         const redirectPath = `/${decoded.role}Dashboard`;
+        console.log('Authenticated user on public path, redirecting to:', redirectPath);
         return NextResponse.redirect(new URL(redirectPath, request.url));
       } else {
         // If token is invalid on a public path, clear it
+        console.log('Invalid token on public path, clearing cookie');
         const response = NextResponse.next();
         response.cookies.set({ name: 'token', value: '', httpOnly: true, expires: new Date(0), path: '/' });
         return response;
@@ -64,6 +70,8 @@ export async function middleware(request) {
   const userId = decoded.id;
   const userRole = decoded.role;
 
+  console.log('Middleware: Authenticated user:', { userId, userRole });
+
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('userId', userId); // Set userId header for authenticated requests
 
@@ -75,8 +83,6 @@ export async function middleware(request) {
 
   // Allow access to /patientDashboard and its nested routes/API routes for users with 'patient' role
   if (userRole === 'patient' && (pathname.startsWith('/patientDashboard') || pathname.startsWith('/api/patientDashboard'))) {
-     // Ensure the API route for profile is specifically handled if needed, though startsWith should cover it.
-     // If you had a different API structure not under /patientDashboard but patient-specific, you'd add it here.
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
@@ -86,39 +92,35 @@ export async function middleware(request) {
   }
 
   // If authenticated but trying to access a path not allowed for their role, redirect to their dashboard
-  // Exclude API routes from this general dashboard redirect to avoid unexpected behavior.
   if (!pathname.startsWith('/api')) {
-      const expectedPath = `/${userRole}Dashboard`;
-      if (!pathname.startsWith(expectedPath)) {
-         console.log(`Middleware: User with role ${userRole} trying to access unauthorized path ${pathname}, redirecting to ${expectedPath}`);
-         return NextResponse.redirect(new URL(expectedPath, request.url));
-      }
+    const expectedPath = `/${userRole}Dashboard`;
+    if (!pathname.startsWith(expectedPath)) {
+      console.log(`Middleware: User with role ${userRole} trying to access unauthorized path ${pathname}, redirecting to ${expectedPath}`);
+      return NextResponse.redirect(new URL(expectedPath, request.url));
+    }
   }
 
-  // Allow access to other API routes if authenticated (you might want more granular API authorization)
-  // For now, authenticated users can access any /api route not explicitly restricted above.
-   if (pathname.startsWith('/api')) {
-       console.log(`Middleware: Authenticated user with role ${userRole} accessing API route ${pathname}. UserId header set.`);
-       return NextResponse.next({ request: { headers: requestHeaders } });
-   }
+  // Allow access to other API routes if authenticated
+  if (pathname.startsWith('/api')) {
+    console.log(`Middleware: Authenticated user with role ${userRole} accessing API route ${pathname}. UserId header set.`);
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
 
-  // If none of the above conditions are met (should be rare with comprehensive path handling)
+  // If none of the above conditions are met
   console.warn(`Middleware: Fallback - Authenticated user with role ${userRole} accessing path ${pathname}. No specific rule matched.`);
-  // Decide on a default behavior: e.g., redirect to a general dashboard or show a forbidden page.
-  // For now, let's redirect to their dashboard as a safe fallback.
-   const fallbackRedirectPath = `/${userRole}Dashboard`;
-   return NextResponse.redirect(new URL(fallbackRedirectPath, request.url));
-
+  const fallbackRedirectPath = `/${userRole}Dashboard`;
+  return NextResponse.redirect(new URL(fallbackRedirectPath, request.url));
 }
 
 export const config = {
   matcher: [
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
-     '/api/patientDashboard/:path*',
-     '/api/adminDashboard/:path*',
-     '/api/doctorDashboard/:path*',
-     '/api/auth/me', // Ensure /api/auth/me is also protected by middleware
-     '/api/patient/profile', // Add the patient profile API route
-     '/api/patient/request', // Add the patient request API route
+    '/api/patientDashboard/:path*',
+    '/api/adminDashboard/:path*',
+    '/api/doctorDashboard/:path*',
+    '/api/auth/me',
+    '/api/patient/profile',
+    '/api/patient/request',
+    '/api/patientrequests',
   ],
 };
