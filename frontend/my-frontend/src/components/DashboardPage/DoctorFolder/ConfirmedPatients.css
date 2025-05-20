@@ -1,0 +1,98 @@
+.confirmed-calendar {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .appointment-card {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    gap: 20px;
+  }
+  
+  .date-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    color: #6c4c94;
+    font-weight: bold;
+  }
+  
+  .date-section .day {
+    font-size: 14px;
+  }
+  
+  .date-section .date {
+    font-size: 24px;
+  }
+  
+  .details-section {
+    flex: 1;
+  }
+  
+  .time {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .patient-info {
+    margin-top: 5px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .patient-info .patient-name {
+    font-weight: bold;
+  }
+  
+  .patient-info .documents-link {
+    color: #6c4c94;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  
+  .patient-info .documents-link:hover {
+    text-decoration: underline;
+  }
+  
+  .issue {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .action-section {
+    display: flex;
+    align-items: center;
+  }
+  
+  .edit-button {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #6c4c94;
+  }
+  
+  .edit-button:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .dropdown-arrow {
+    font-size: 10px;
+  }
+  
