@@ -1,0 +1,50 @@
+services:
+  frontend:
+    build:
+      context: ./next-app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8180
+      - MONGODB_URI=mongodb://mongodb:27017/pdfapp
+    depends_on:
+      - backend
+      - mongodb
+    volumes:
+      - ./next-app:/app
+      - /app/node_modules
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8180:8180"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/pdfapp
+    volumes:
+      - ./server:/app
+      - ./server/received_pdfs:/app/received_pdfs
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  app-network:
+    driver: bridge
