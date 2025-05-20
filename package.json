@@ -12,6 +12,7 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "bcryptjs": "^2.4.3",
+    "browser-image-compression": "^2.0.2",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
     "jose": "^6.0.10",

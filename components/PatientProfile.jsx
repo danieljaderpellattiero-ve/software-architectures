@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from "react";
 import profile from "@/public/Profile.svg";
 import Cookies from 'js-cookie';
+import Image from 'next/image';
+import imageCompression from 'browser-image-compression';
+import { FaUser } from 'react-icons/fa';
 
 const PatientProfile = () => {
   const [isEditable, setIsEditable] = useState(false);
@@ -183,8 +186,22 @@ const PatientProfile = () => {
       )}
 
       <div className="flex gap-6 mb-8 items-center">
-        <div className="w-32 h-32 rounded-full overflow-hidden shadow-sm border-4 border-purple-500">
-          <img src={profile} alt="Profile" className="w-full h-full object-cover" />
+        <div className="w-32 h-32 rounded-full overflow-hidden shadow-sm border-4 border-purple-500 flex items-center justify-center bg-gray-200">
+          {formData.profileImage ? (
+            <Image 
+              src={formData.profileImage} 
+              alt="Profile" 
+              width={128}
+              height={128}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                console.error('Frontend PatientProfile: Error loading image');
+                e.target.src = profile; // Fallback to original SVG if the saved image fails
+              }}
+            />
+          ) : (
+            <FaUser className="text-gray-500" size={80} />
+          )}
         </div>
         <div className="flex-1">
           <h2 className="text-xl font-semibold text-purple-700">{`${formData.firstName} ${formData.surname}`}</h2>
