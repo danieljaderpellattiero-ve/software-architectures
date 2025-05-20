@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 // import mongoose from "mongoose";
 // import PatientRequest from "@/models/patientRequest";
 
-// Remove dummy data
+// Remove dummy datad
 // const patientData = [ ... ];
 
 const PatientRequests = () => {
