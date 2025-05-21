@@ -54,7 +54,7 @@ export function AuthProvider({ children }) {
     checkAuth();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, tempToken = null) => {
     try {
       console.log('AuthContext: Attempting login...');
       const response = await fetch('/api/auth/login', {
@@ -70,7 +70,12 @@ export function AuthProvider({ children }) {
       console.log('AuthContext: Login response:', data);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
+        throw new Error(data.message || 'Login failed');
+      }
+
+      // If 2FA is required, return false to indicate login is not complete
+      if (data.requires2FA) {
+        return false;
       }
 
       if (data.success && data.user) {

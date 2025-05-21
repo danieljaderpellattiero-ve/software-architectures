@@ -119,8 +119,7 @@ export const config = {
     '/api/adminDashboard/:path*',
     '/api/doctorDashboard/:path*',
     '/api/auth/me',
-    '/api/patient/profile',
-    '/api/patient/request',
+    '/api/patient/:path*',
     '/api/patientrequests',
   ],
 };

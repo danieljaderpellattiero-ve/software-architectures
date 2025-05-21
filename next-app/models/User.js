@@ -69,6 +69,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['patient', 'doctor', 'admin'],
     default: 'patient'
+  },
+  twoFactorSecret: {
+    type: String,
+    default: null
+  },
+  twoFactorEnabled: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

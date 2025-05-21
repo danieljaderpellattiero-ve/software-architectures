@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/config/db';
 import User from '@/models/User';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+dotenv.config({ path: '../.env' });
 
 export async function GET(request) {
   try {
@@ -41,15 +43,15 @@ export async function GET(request) {
       email: user.email || '',
       phoneNumber: user.phoneNumber || '',
       phoneCode: '+98', // Default phone code
-      country: user.country || '',
+      country: user.country || '', // Ensure country is always a string
       city: user.city || '',
       homeAddress: user.homeAddress || '',
-      medicalData: user.medicalData || {}
+      medicalData: user.medicalData || {},
+      twoFactorEnabled: user.twoFactorEnabled || false // Include 2FA status
     };
     
-    console.log('API Profile GET: Raw user document country value:', user.country);
-    console.log('API Profile GET: Processed profileData country value:', profileData.country);
-    console.log('API Profile GET: Profile data fetched successfully');
+    console.log('API Profile GET: Raw user document:', user);
+    console.log('API Profile GET: Processed profileData:', profileData);
     return NextResponse.json(profileData);
   } catch (error) {
     console.error('Error in GET /api/patient/profile:', error);

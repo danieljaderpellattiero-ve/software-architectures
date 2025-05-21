@@ -1,109 +1,100 @@
 // File: app/api/auth/login/route.js
 import { NextResponse } from 'next/server';
-import initializeDB from '@/config/initDB'; // Adjust path if necessary
-import User from '@/models/User';         // Adjust path if necessary
-import jwt from 'jsonwebtoken';
-// Assuming you have a password comparison utility (like bcrypt) in your User model
-// import bcrypt from 'bcryptjs'; // Example if using bcrypt directly here
+import connectDB from '@/config/db';
+import User from '@/models/User';
+import bcrypt from 'bcryptjs';
+import { SignJWT } from 'jose';
 
 export async function POST(request) {
   try {
-    // Ensure DB connection is established
-    await initializeDB();
-    console.log("Database and models initialized");
+    await connectDB();
+    console.log("Database connected successfully");
 
     const { email, password } = await request.json();
     console.log("Login attempt for email:", email);
 
-    // Find user (without password initially)
+    // Find user in database
     const user = await User.findOne({ email });
-    console.log("User found:", user ? "Yes" : "No");
-
     if (!user) {
-      console.log('User not found');
       return NextResponse.json(
-        { error: 'Invalid credentials' },
+        { message: 'Invalid email or password' },
         { status: 401 }
       );
     }
 
-    // Find user again, explicitly selecting the password field
-    // Mongoose requires .select('+password') if password field has select: false in schema
-    const userWithPassword = await User.findOne({ email }).select('+password');
-    console.log('User with password found:', userWithPassword ? 'Yes' : 'No');
-
-    if (!userWithPassword) {
-        // This case should theoretically not happen if user was found above, but good practice
-        console.log('Error fetching user with password field.');
-        return NextResponse.json(
-            { error: 'Server error during login process' },
-            { status: 500 }
-          );
-    }
-
-    // Check if password matches using the model's method (preferred)
-    // Assumes your User model has a method like 'matchPassword' that handles bcrypt comparison
-    const isMatch = await userWithPassword.matchPassword(password);
-    console.log('Password match result from model:', isMatch);
-
-    if (!isMatch) {
-      console.log('Password does not match');
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       return NextResponse.json(
-        { error: 'Invalid credentials' },
+        { message: 'Invalid email or password' },
         { status: 401 }
       );
     }
 
-    // --- Login successful ---
+    // If 2FA is not enabled, proceed with normal login
+    if (!user.twoFactorEnabled) {
+      // Generate JWT token
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+      const token = await new SignJWT({ 
+        email: user.email,
+        role: user.role,
+        id: user._id.toString()
+      })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setIssuedAt()
+        .setExpirationTime('24h')
+        .sign(secret);
+      
+      // Create the response
+      const response = NextResponse.json({ 
+        success: true,
+        user: {
+          email: user.email,
+          role: user.role,
+          twoFactorEnabled: false
+        }
+      });
 
-    // Create token payload
-    const payload = { 
-      id: user._id,
-      role: user.role
-    };
+      // Set the cookie in the response
+      response.cookies.set({
+        name: 'token',
+        value: token,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 60 * 60 * 24 // 24 hours
+      });
 
-    // Sign the token
-    const token = jwt.sign(
-      payload,
-      process.env.JWT_SECRET, // Ensure JWT_SECRET is set in your .env file
-      { expiresIn: '7d' }
-    );
-    console.log('Login successful, token created');
+      return response;
+    }
 
-    // Prepare user data to return (excluding sensitive info)
-    const userData = {
-      id: user._id,
-      name: user.name,
+    // If 2FA is enabled, generate a temporary token
+    const tempToken = await new SignJWT({ 
       email: user.email,
-      role: user.role
-    };
-
-    // Create the response
-    const response = NextResponse.json({
+      role: user.role,
+      id: user._id.toString(),
+      temp: true
+    })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime('5m') // 5 minutes
+      .sign(new TextEncoder().encode(process.env.JWT_SECRET));
+    
+    return NextResponse.json({
       success: true,
-      token,
-      user: userData
+      requires2FA: true,
+      tempToken,
+      user: {
+        email: user.email,
+        role: user.role,
+        twoFactorEnabled: true
+      }
     });
-
-    // Set the token in an HTTP-only cookie
-    response.cookies.set({
-      name: 'token',
-      value: token,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 7 * 24 * 60 * 60 // 7 days in seconds
-    });
-
-    console.log('Token set in cookie, user data:', userData);
-    return response;
 
   } catch (error) {
-    console.error("Login API error:", error);
-    // Avoid sending detailed internal errors to the client
+    console.error('Login error:', error);
     return NextResponse.json(
-      { error: "Server error during login" },
+      { message: 'Internal server error' },
       { status: 500 }
     );
   }

@@ -6,8 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // Correct import for App Router
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'; // Make sure heroicons is installed
 import { useAuth } from '@/context/AuthContext'; // Import useAuth
-// Import TwoFactorAuth if you intend to use the modal functionality later
-// import TwoFactorAuth from "@/components/TwoFactorAuth";
+import TwoFactorAuth from "@/components/TwoFactorAuth";
 
 function LoginPage() {
   console.log('LoginPage: Component rendering'); // Added log
@@ -19,8 +18,10 @@ function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  // State for 2FA modal - uncomment if/when implementing 2FA flow
-  // const [show2FAModal, setShow2FAModal] = useState(false);
+  const [show2FAModal, setShow2FAModal] = useState(false);
+  const [tempAuthData, setTempAuthData] = useState(null);
+  const [user, setUser] = useState(null);
+  const [authCode, setAuthCode] = useState("");
 
   // Basic form validation
   const validateForm = () => {
@@ -40,31 +41,53 @@ function LoginPage() {
 
   // Handle login submission
   const handleLogin = async (e) => {
-    console.log('LoginPage: handleLogin called'); // Added log
-    e.preventDefault(); // Prevent default HTML form submission
+    console.log('LoginPage: handleLogin called');
+    e.preventDefault();
 
     if (!validateForm()) {
-      return; // Stop if validation fails
+      return;
     }
 
     setIsLoading(true);
-    setError(""); // Clear errors before new attempt
+    setError("");
 
     try {
-      console.log('LoginPage: Attempting login via AuthContext'); // Added log
-      const success = await login(email, password);
-      console.log('LoginPage: Login result:', success); // Added log
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      if (!success) {
-        setError('Invalid email or password');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      if (data.requires2FA) {
+        setTempAuthData(data.tempToken);
+        setShow2FAModal(true);
+      } else {
+        const success = await login(email, password);
+        if (success) {
+          router.push('/dashboard');
+        }
       }
     } catch (err) {
-      // Handle network errors or errors during fetch/JSON parsing
-      console.error('LoginPage: Login error:', err); // Added log
+      console.error('LoginPage: Login error:', err);
       setError(err.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handle2FASuccess = () => {
+    console.log('LoginPage: 2FA verification successful, redirecting to dashboard');
+    setShow2FAModal(false);
+    setTempAuthData(null);
+    router.push('/dashboard');
   };
 
   // JSX for the Login Form
@@ -151,19 +174,14 @@ function LoginPage() {
           </Link>
         </p>
       </div>
-       {/* Uncomment and implement if using 2FA
-       {show2FAModal && (
-          <TwoFactorAuth
-             email={email} // Pass necessary props
-             onVerifySuccess={() => {
-                 // Handle successful 2FA verification (e.g., final redirect)
-                 // const redirectPath = ... determine final path ...;
-                 // router.push(redirectPath);
-             }}
-             onClose={() => setShow2FAModal(false)}
-           />
-        )}
-       */}
+      {show2FAModal && (
+        <TwoFactorAuth
+          email={email}
+          tempToken={tempAuthData}
+          onVerifySuccess={handle2FASuccess}
+          onClose={() => setShow2FAModal(false)}
+        />
+      )}
     </div>
   );
 }

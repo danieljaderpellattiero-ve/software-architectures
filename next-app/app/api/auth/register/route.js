@@ -3,6 +3,10 @@ import initializeDB from '@/config/initDB';
 import User from '@/models/User';
 import Log from '@/models/Log';
 import bcrypt from 'bcryptjs';
+import { authenticator } from 'otplib';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: '../.env' });
 
 export async function POST(request) {
   try {
@@ -18,6 +22,9 @@ export async function POST(request) {
       );
     }
 
+    // Generate 2FA secret
+    const twoFactorSecret = authenticator.generateSecret();
+
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -31,16 +38,21 @@ export async function POST(request) {
       codiceFiscale,
       homeAddress,
       medicalData,
-      role
+      role,
+      twoFactorSecret,
+      twoFactorEnabled: false
     });
 
     // Create log entry
     await Log.create({
       action: 'CREATE_USER',
-      performedBy: user._id, // The user is creating their own account
+      performedBy: user._id,
       targetUser: user._id,
       details: `New ${role} account created: ${email}`
     });
+
+    // Generate QR code URL for 2FA setup
+    const otpauth = authenticator.keyuri(email, 'YourAppName', twoFactorSecret);
 
     return NextResponse.json(
       {
@@ -48,6 +60,8 @@ export async function POST(request) {
         name: user.name,
         email: user.email,
         role: user.role,
+        twoFactorSecret,
+        twoFactorSetupUrl: otpauth
       },
       { status: 201 }
     );

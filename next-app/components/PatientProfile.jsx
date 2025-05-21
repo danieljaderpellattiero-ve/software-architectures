@@ -5,8 +5,10 @@ import Cookies from 'js-cookie';
 import Image from 'next/image';
 import imageCompression from 'browser-image-compression';
 import { FaUser } from 'react-icons/fa';
+import { useAuth } from '@/context/AuthContext';
 
 const PatientProfile = () => {
+  const { user } = useAuth();
   const [isEditable, setIsEditable] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
@@ -23,10 +25,16 @@ const PatientProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  // 2FA states
+  const [qrCode, setQrCode] = useState(null);
+  const [secret, setSecret] = useState(null);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [show2FASetup, setShow2FASetup] = useState(false);
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
 
   useEffect(() => {
     fetchPatientData();
-  }, []);
+  }, [user]);
 
   const fetchPatientData = async () => {
     try {
@@ -53,12 +61,13 @@ const PatientProfile = () => {
       }
       
       setFormData(data);
+      setTwoFactorEnabled(data.twoFactorEnabled || false);
       console.log('Frontend PatientProfile: formData state after setting:', data);
       console.log('Frontend PatientProfile: Country value in formData after setting:', data.country);
       setOriginalData(data); // Store original data for cancel functionality
     } catch (err) {
-      console.error('Error fetching patient data:', err);
-      setError(err.message || 'An error occurred while fetching patient data');
+      console.error('Frontend PatientProfile: Error fetching data:', err);
+      setError(err.message || 'Failed to fetch profile data');
     } finally {
       setLoading(false);
     }
@@ -157,6 +166,105 @@ const PatientProfile = () => {
       ...prev,
       [id]: value
     }));
+  };
+
+  const handleSetup2FA = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      setSuccessMessage(null);
+
+      const response = await fetch('/api/auth/setup-2fa', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: formData.email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to setup 2FA');
+      }
+
+      setQrCode(data.qrCode);
+      setSecret(data.secret);
+      setShow2FASetup(true);
+    } catch (err) {
+      setError(err.message || 'Failed to setup 2FA');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerify2FA = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      setSuccessMessage(null);
+
+      const response = await fetch('/api/auth/setup-2fa', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          code: verificationCode,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to verify 2FA');
+      }
+
+      setSuccessMessage('2FA has been enabled successfully!');
+      setShow2FASetup(false);
+      setQrCode(null);
+      setSecret(null);
+      setVerificationCode('');
+      setTwoFactorEnabled(true);
+    } catch (err) {
+      setError(err.message || 'Failed to verify 2FA');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDisable2FA = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      setSuccessMessage(null);
+
+      const response = await fetch('/api/auth/setup-2fa', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          code: verificationCode,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to disable 2FA');
+      }
+
+      setSuccessMessage('2FA has been disabled successfully!');
+      setTwoFactorEnabled(false);
+      setVerificationCode('');
+    } catch (err) {
+      setError(err.message || 'Failed to disable 2FA');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) return <div className="text-center p-4">Loading...</div>;
@@ -388,6 +496,85 @@ const PatientProfile = () => {
           </button>
         </div>
       </form>
+
+      {/* 2FA Section */}
+      <div className="mt-8 p-6 bg-white rounded-lg shadow">
+        <h3 className="text-xl font-semibold mb-4 text-gray-800">Two-Factor Authentication</h3>
+        
+        {twoFactorEnabled ? (
+          <div className="space-y-4">
+            <div className="bg-green-50 p-4 rounded-md">
+              <p className="text-green-800">
+                2FA is currently enabled for your account
+              </p>
+            </div>
+            <div className="mt-4">
+              <input
+                type="text"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+                placeholder="Enter 6-digit code to disable 2FA"
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                maxLength={6}
+                pattern="[0-9]*"
+                inputMode="numeric"
+              />
+            </div>
+            <button
+              onClick={handleDisable2FA}
+              disabled={loading || verificationCode.length !== 6}
+              className="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 disabled:opacity-50"
+            >
+              {loading ? 'Disabling...' : 'Disable 2FA'}
+            </button>
+          </div>
+        ) : (
+          <div>
+            {!show2FASetup ? (
+              <button
+                onClick={handleSetup2FA}
+                disabled={loading}
+                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 disabled:opacity-50"
+              >
+                {loading ? 'Setting up...' : 'Enable 2FA'}
+              </button>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-gray-600">
+                  Scan this QR code with your authenticator app:
+                </p>
+                {qrCode && (
+                  <div className="flex justify-center">
+                    <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" />
+                  </div>
+                )}
+                <p className="text-sm text-gray-500">
+                  Or enter this code manually: {secret}
+                </p>
+                <div className="mt-4">
+                  <input
+                    type="text"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+                    placeholder="Enter 6-digit code"
+                    className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    maxLength={6}
+                    pattern="[0-9]*"
+                    inputMode="numeric"
+                  />
+                </div>
+                <button
+                  onClick={handleVerify2FA}
+                  disabled={loading || verificationCode.length !== 6}
+                  className="w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 disabled:opacity-50"
+                >
+                  {loading ? 'Verifying...' : 'Verify and Enable 2FA'}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
