@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const patientRequestSchema = new mongoose.Schema({
+const acceptedPatientRequestSchema = new mongoose.Schema({
   patientId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -21,22 +21,14 @@ const patientRequestSchema = new mongoose.Schema({
   },
   request: {
     type: String,
-    required: true
-  },
-  status: {
-    type: Boolean,
-    default: false // false means pending, true means accepted
+    required: false
   },
   acceptedAt: {
-    type: Date,
-    required: false // Not required for pending requests
-  },
-  timestamp: {
     type: Date,
     default: Date.now
   }
 });
 
-const PatientRequest = mongoose.models.PatientRequest || mongoose.model('PatientRequest', patientRequestSchema);
+const AcceptedPatientRequest = mongoose.models.AcceptedPatientRequest || mongoose.model('AcceptedPatientRequest', acceptedPatientRequestSchema);
 
-export default PatientRequest; 
+export default AcceptedPatientRequest; 

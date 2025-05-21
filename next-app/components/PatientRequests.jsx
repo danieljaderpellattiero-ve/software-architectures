@@ -69,6 +69,55 @@ const PatientRequests = () => {
     return <div>No patient requests found.</div>; // Or return null
   }
 
+  const handleAccept = async (requestId) => {
+    try {
+      console.log('PatientRequests: Attempting to accept request:', requestId);
+      const response = await fetch(`/api/doctor/patientrequests/${requestId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('PatientRequests: Error accepting request:', errorData.message || 'Failed to accept patient request');
+        // Handle error in UI, e.g., show a temporary message
+      } else {
+        const updatedRequest = await response.json();
+        console.log('PatientRequests: Request accepted successfully:', updatedRequest);
+        // Remove the accepted request from the state
+        setRequests(requests.filter(req => req._id !== requestId));
+      }
+    } catch (err) {
+      console.error('PatientRequests: Error accepting request (catch block):', err);
+      // Handle error in UI
+    }
+  };
+
+  const handleDeny = async (requestId) => {
+    try {
+      console.log('PatientRequests: Attempting to deny request:', requestId);
+      const response = await fetch(`/api/doctor/patientrequests/${requestId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('PatientRequests: Error denying request:', errorData.message || 'Failed to deny patient request');
+        // Handle error in UI
+      } else {
+        console.log('PatientRequests: Request denied successfully:', requestId);
+        // Remove the denied request from the state
+        setRequests(requests.filter(req => req._id !== requestId));
+      }
+    } catch (err) {
+      console.error('PatientRequests: Error denying request (catch block):', err);
+      // Handle error in UI
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -78,12 +127,24 @@ const PatientRequests = () => {
           <div>
             <h3 className="font-semibold">{request.patientName}</h3>
             <p>Request: {request.request}</p>
-            <p>Status: {request.status}</p>
-            <p>Date: {new Date(request.createdAt).toLocaleDateString()}</p>
+            <p>Status: {request.status ? 'Accepted' : 'Pending'}</p>
+            <p>Date: {dayjs(request.createdAt).format('YYYY-MM-DD HH:mm')}</p>
           </div>
           <div className="flex space-x-2">
-            <button className="bg-green-500 text-white px-3 py-1 rounded">Accept</button>
-            <button className="bg-red-500 text-white px-3 py-1 rounded">Reject</button>
+            {request.status === false && (
+              <button
+                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                onClick={() => handleAccept(request._id)}
+              >
+                Accept
+              </button>
+            )}
+            <button
+              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+              onClick={() => handleDeny(request._id)}
+            >
+              {request.status === true ? 'Delete' : 'Deny'}
+            </button>
           </div>
         </div>
       ))}

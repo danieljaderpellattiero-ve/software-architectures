@@ -21,6 +21,7 @@ export async function POST(request) {
 
     const data = await request.json();
     console.log('API Request POST: Received data:', data);
+    const { doctorId, doctorName, request: patientRequestContent } = data; // Extract request field
 
     // Get patient details from User collection
     const patient = await User.findById(userId);
@@ -33,8 +34,9 @@ export async function POST(request) {
     const newRequest = new PatientRequest({
       patientId: userId,
       patientName: `${patient.name}`,
-      doctorId: data.doctorId,
-      doctorName: data.doctorName,
+      doctorId: doctorId,
+      doctorName: doctorName,
+      request: patientRequestContent, // Include the request content
       status: false, // false means pending
       timestamp: new Date(),
     });
