@@ -9,18 +9,24 @@ const connectDB = async () => {
   }
 
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 10s
-      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
-      family: 4, // Use IPv4, skip trying IPv6
-      maxPoolSize: 10, // Maintain up to 10 socket connections
-      minPoolSize: 5, // Maintain at least 5 socket connections
-      ssl: true,
-      tls: true,
-      tlsAllowInvalidCertificates: true,
-      tlsAllowInvalidHostnames: true,
-      retryWrites: true,
-      w: 'majority'
+    const mongoURI = process.env.MONGODB_URI;
+    console.log('Connecting to MongoDB:', mongoURI.includes('mongodb:27017') ? 'Local Docker MongoDB' : 'Cloud MongoDB');
+
+    const conn = await mongoose.connect(mongoURI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      family: 4,
+      maxPoolSize: 10,
+      minPoolSize: 5,
+      // Only use SSL for cloud connections
+      ...(mongoURI.includes('mongodb+srv') ? {
+        ssl: true,
+        tls: true,
+        tlsAllowInvalidCertificates: true,
+        tlsAllowInvalidHostnames: true,
+        retryWrites: true,
+        w: 'majority'
+      } : {})
     });
 
     isConnected = conn.connection.readyState === 1;
