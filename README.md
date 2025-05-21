@@ -1,6 +1,6 @@
 # 🏥 Hospital Management System
 
-[![My Skills](https://skillicons.dev/icons?i=nextjs,react,tailwind,mongodb,nodejs,flask,py,docker,gcp,&perline=8)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=nextjs,react,tailwind,mongodb,nodejs,flask,py,docker,gcp,&perline=9)](https://skillicons.dev)
 
 A full-stack hospital management system built using **Next.js** for the frontend and **Node.js/Express** for the backend. It supports patient record handling, account management, and provider coordination. The application is fully containerized using Docker.
 
