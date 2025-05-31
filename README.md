@@ -16,7 +16,6 @@
   - [📥 Installation](#-installation)
     - [Local Development](#local-development)
     - [Docker Deployment](#docker-deployment)
-  - [🧪 Testing](#-testing)
   - [📝 Author](#-author)
 
 ---
@@ -38,7 +37,6 @@ The frontend is built using **Next.js** with server-side rendering. Backend APIs
 - 🧑‍⚕️ Doctor & Admin Dashboards
 - 🧾 Patient Records Management
 - 🔐 User Authentication
-- 🧪 Unit and API Testing with Jest
 - 🐳 Docker-based deployment setup
 
 ---
@@ -110,14 +108,6 @@ docker compose up --build
 
 ---
 
-## 🧪 Testing
-
-Run unit and API route tests with:
-
-```bash
-cd next-app
-npm test
-```
 
 
 ## 📝 Author
