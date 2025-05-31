@@ -7,6 +7,8 @@ import imageCompression from 'browser-image-compression';
 import { FaUser } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const PatientProfile = () => {
   const { user, logout } = useAuth();
@@ -34,6 +36,12 @@ const PatientProfile = () => {
   const [twoFactorError, setTwoFactorError] = useState(null);
   const [show2FASetup, setShow2FASetup] = useState(false);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  // PDF Upload State
+  const [isUploadingPdf, setIsUploadingPdf] = useState(false);
+  const [uploadPdfError, setUploadPdfError] = useState(null);
+  const [uploadPdfSuccess, setUploadPdfSuccess] = useState(null);
+  // Analyzed Medical Data State
+  const [analyzedMedicalData, setAnalyzedMedicalData] = useState(null);
 
   useEffect(() => {
     fetchPatientData();
@@ -44,16 +52,25 @@ const PatientProfile = () => {
       setLoading(true);
       setError(null);
       setSuccessMessage(null);
+      setAnalyzedMedicalData(null); // Clear previous data while fetching
 
       const response = await fetch('/api/patient/profile');
       const data = await response.json();
       
-      console.log('Frontend PatientProfile: Data received from API for state update:', data);
-      console.log('Frontend PatientProfile: Country value from API:', data.country);
+      console.log('Frontend PatientProfile fetchPatientData: Raw data object from API:', data);
+
+      console.log('Frontend PatientProfile fetchPatientData: Data received from API:', data);
+      console.log('Frontend PatientProfile fetchPatientData: analyzedPdfData received:', data?.analyzedPdfData);
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to fetch patient data');
       }
+      
+      // Store fetched analyzed data
+      setAnalyzedMedicalData({
+        analyzedPdfData: data.analyzedPdfData || null,
+        uploadedPdfBase64: data.uploadedPdfBase64 || null,
+      });
       
       // Format the date if it exists
       if (data.dateOfBirth) {
@@ -302,6 +319,98 @@ const PatientProfile = () => {
     }
   };
 
+  const handlePdfUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
+
+    if (file.type !== 'application/pdf') {
+      setUploadPdfError('Please upload a PDF file.');
+      setUploadPdfSuccess(null);
+      return;
+    }
+
+    setIsUploadingPdf(true);
+    setUploadPdfError(null);
+    setUploadPdfSuccess(null);
+
+    const reader = new FileReader();
+
+    reader.onloadend = async () => {
+      const base64String = reader.result.split(',')[1]; // Get base64 string after 'base64,'
+      console.log('PDF file read as Base64.');
+
+      try {
+        // Send PDF to Python Flask server
+        const flaskResponse = await fetch('http://localhost:8180/Gemini', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ pdf: base64String }),
+        });
+
+        const flaskData = await flaskResponse.json();
+
+        if (!flaskResponse.ok) {
+          throw new Error(flaskData.error || 'Error processing PDF on server.');
+        }
+
+        console.log('PDF processed by Flask server, response:', flaskData.response);
+
+        // Send both the Base64 PDF and the analyzed result to the Next.js API endpoint
+        const nextApiResponse = await fetch('/api/patient/profile/save-analyzed-data', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            base64Pdf: base64String, // Include the Base64 PDF string
+            analyzedData: flaskData.response // Include the analyzed data
+          }),
+        });
+
+        const nextApiData = await nextApiResponse.json();
+
+        if (!nextApiResponse.ok) {
+          throw new Error(nextApiData.error || 'Error saving analyzed data to profile.');
+        }
+
+        console.log('Analyzed data saved to profile:', nextApiData);
+        
+        // Re-fetch patient data to update the profile display
+        await fetchPatientData();
+
+        setUploadPdfSuccess('PDF uploaded and processed successfully! Analyzed data and PDF saved to profile.');
+
+      } catch (error) {
+        console.error('Error during PDF upload or processing:', error);
+        setUploadPdfError(error.message || 'Failed to upload or process PDF.');
+      } finally {
+        setIsUploadingPdf(false);
+      }
+    };
+
+    reader.onerror = () => {
+      console.error('Error reading PDF file.');
+      setIsUploadingPdf(false);
+      setUploadPdfError('Error reading PDF file.');
+      setUploadPdfSuccess(null);
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  const handleDownloadPdf = (base64) => {
+    const link = document.createElement('a');
+    link.href = `data:application/pdf;base64,${base64}`;
+    link.download = 'uploaded_medical_document.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (loading) return <div className="text-center p-4">Loading...</div>;
   if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
@@ -514,23 +623,59 @@ const PatientProfile = () => {
             readOnly={!isEditable}
           />
         </div>
+        {/* Display Analyzed Medical Data beside/below City */}
+        {analyzedMedicalData && ( 
+          <div className="md:col-span-2 mt-4">
+            <h3 className="text-xl font-semibold mb-2 text-gray-800">Analyzed Medical Data</h3>
+            {/* Adjust rendering based on data structure */}
+            <div className="prose max-w-none overflow-auto max-h-60 p-4 border rounded bg-gray-50">
+              {analyzedMedicalData.analyzedPdfData ? (
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{
+                  // Ensure the data is a string before passing to ReactMarkdown
+                  typeof analyzedMedicalData.analyzedPdfData === 'string' 
+                    ? analyzedMedicalData.analyzedPdfData 
+                    : JSON.stringify(analyzedMedicalData.analyzedPdfData, null, 2)
+                }</ReactMarkdown>
+              ) : (
+                <p>No analyzed medical data available.</p>
+              )}
+            </div>
+          </div>
+        )}
         <div className="md:col-span-2 flex gap-4 mt-6">
-          <button
-            type="button"
-            className="bg-purple-600 hover:bg-purple-800 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline disabled:bg-gray-400 disabled:cursor-not-allowed"
-            disabled={!isEditable}
-          >
-            Fill Medical Records
-          </button>
-          <button
-            type="button"
-            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline disabled:bg-gray-400 disabled:cursor-not-allowed"
-            disabled={!isEditable}
-          >
-            Upload Extra Medical Files
-          </button>
         </div>
       </form>
+
+      {/* PDF Upload Section */}
+      <div className="mt-8 border-t pt-6">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">Upload Medical Documents (PDF)</h3>
+        <div className="flex items-center space-x-4">
+          <input
+            type="file"
+            id="pdfUpload"
+            accept=".pdf"
+            className="hidden"
+            onChange={handlePdfUpload}
+          />
+          <label
+            htmlFor="pdfUpload"
+            className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer ${isUploadingPdf ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {isUploadingPdf ? 'Uploading...' : 'Upload PDF'}
+          </label>
+          {/* Download Button next to Upload */}
+          {analyzedMedicalData?.uploadedPdfBase64 && (
+            <button
+              onClick={() => handleDownloadPdf(analyzedMedicalData.uploadedPdfBase64)}
+              className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+            >
+              Download PDF
+            </button>
+          )}
+        </div>
+        {uploadPdfError && <p className="text-red-500 text-sm mt-2">{uploadPdfError}</p>}
+        {uploadPdfSuccess && <p className="text-green-500 text-sm mt-2">{uploadPdfSuccess}</p>}
+      </div>
 
       {/* 2FA Section */}
       <div className="mt-8 p-6 bg-white rounded-lg shadow">

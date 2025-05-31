@@ -13,6 +13,15 @@ import AppointmentModal from './AppointmentModal'; // Import the new modal compo
 // Remove dummy datad
 // const patientData = [ ... ];
 
+const handleDownloadPdf = (base64) => {
+  const link = document.createElement('a');
+  link.href = `data:application/pdf;base64,${base64}`;
+  link.download = 'uploaded_medical_document.pdf';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 const PatientRequests = () => {
   const { user, authLoading } = useAuth(); // Get user and authLoading from useAuth
   const [requests, setRequests] = useState([]); // State to store fetched requests
@@ -135,12 +144,11 @@ const PatientRequests = () => {
     console.log('Rejecting request with ID:', requestId);
     // TODO: Implement logic to update request status to rejected
     try {
-      const response = await fetch(`/api/doctor/requests/${requestId}`, {
+      const response = await fetch(`/api/doctor/requests/${requestId}/reject`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ status: 'rejected' }),
       });
 
       if (!response.ok) {
@@ -162,28 +170,37 @@ const PatientRequests = () => {
     <div className="space-y-4">
       <h2 className="text-2xl font-bold mb-4">Patient Requests</h2>
       {requests.map((request) => (
-        <div key={request._id} className="border p-4 rounded-lg shadow flex justify-between items-center">
+        <div key={request._id} className="border p-4 rounded-lg shadow-sm bg-white flex justify-between items-center transition duration-300 ease-in-out hover:shadow-md">
           <div>
             <h3 className="font-semibold">{request.patientName}</h3>
             <p>Request: {request.request}</p>
             <p>Status: {request.status ? 'Accepted' : 'Pending'}</p>
             <p>Date: {dayjs(request.createdAt).format('YYYY-MM-DD HH:mm')}</p>
           </div>
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 items-center">
             {request.status === false && (
               <button
                 onClick={() => handleAcceptRequest(request)}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm"
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm cursor-pointer"
               >
                 Accept
               </button>
             )}
             <button
               onClick={() => handleRejectRequest(request._id)}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm"
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm cursor-pointer"
             >
               Reject
             </button>
+            {/* Download PDF Button for Pending Requests */}
+            {request.uploadedPdfBase64 && (
+              <button
+                onClick={() => handleDownloadPdf(request.uploadedPdfBase64)}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm ml-2 cursor-pointer"
+              >
+                Download PDF
+              </button>
+            )}
           </div>
         </div>
       ))}

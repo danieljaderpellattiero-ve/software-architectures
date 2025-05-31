@@ -48,7 +48,6 @@ export async function GET(request) {
     } else {
         // If userId came from the header, we need to get the role from the database or token
         // Since middleware decoded the token and set userId, let's assume we can get role similarly if needed.
-        // For now, we'll fetch the user from DB to get the role reliably if not already inferred.
         // A more optimized approach would be for middleware to set role header too.
          try {
             // Re-verify token to get role if not passed via header (or fetch user from DB)
@@ -92,34 +91,64 @@ export async function GET(request) {
     const queryDoctorId = searchParams.get('doctorId');
     const queryPatientId = searchParams.get('patientId');
 
-    let query = {};
+    let matchQuery = {};
     
-    // Build initial query based on the authenticated user's role and ID
+    // Build initial match query based on the authenticated user's role and ID
     if (userRole === 'doctor') {
-      query.doctorId = new mongoose.Types.ObjectId(userId);
-      query.status = false; // Only fetch pending requests for doctors
-      console.log('API /api/patientrequests GET: Building query for doctor with ID:', userId);
+      matchQuery.doctorId = new mongoose.Types.ObjectId(userId);
+      matchQuery.status = false; // Only fetch pending requests for doctors
+      console.log('API /api/patientrequests GET: Building match query for doctor with ID:', userId);
     } else if (userRole === 'patient') {
-      query.patientId = new mongoose.Types.ObjectId(userId);
-      console.log('API /api/patientrequests GET: Building query for patient with ID:', userId);
+      matchQuery.patientId = new mongoose.Types.ObjectId(userId);
+      console.log('API /api/patientrequests GET: Building match query for patient with ID:', userId);
     } else {
          // Should not reach here if authentication/authorization is handled, but defensive check
          console.warn('API /api/patientrequests GET: Unhandled user role:', userRole);
          return NextResponse.json({ error: 'Unauthorized or invalid user role' }, { status: 403 });
     }
 
-    // Optional: If specific IDs are provided in query params (e.g., doctor viewing a specific patient's requests),
-    // add them to the query. Ensure the authenticated user is authorized to view these.
-    // For simplicity now, we will just use the authenticated user's ID from the middleware.
-    // If you need to fetch requests for *other* users (e.g., doctor views a specific patient's requests),
-    // you would add logic here to check if the authenticated user (doctor) has permission
-    // to query by patientId or doctorId different from their own.
+    // Use aggregation to join with the users collection to get patient details, including PDF data
+    const patientRequests = await PatientRequest.aggregate([
+      { $match: matchQuery }, // Use the built match query
+      { $sort: { createdAt: 1 } }, // Sort by creation date
+      { $lookup: {
+          from: 'users', // The collection to join
+          localField: 'patientId', // Field from the patientrequests collection
+          foreignField: '_id', // Field from the users collection
+          as: 'patientDetails' // Output array field name
+      } },
+      { $unwind: { path: '$patientDetails', preserveNullAndEmptyArrays: true } }, // Deconstruct patientDetails, allow requests without user data
+      { $project: { // Reshape the output document
+          _id: 1,
+          patientId: 1,
+          patientName: 1,
+          doctorId: 1,
+          doctorName: 1,
+          request: 1,
+          status: 1,
+          timestamp: 1,
+          createdAt: 1, // Include createdAt for sorting/display
+          appointmentDateTime: 1, // Include in case status filter changes later
+          // Include fields from patientDetails, specifically the PDF data and maybe patient's current name/details
+          uploadedPdfBase64: '$patientDetails.uploadedPdfBase64',
+          // Optionally include patient's current name from user document if patientName in request might be outdated
+          // currentPatientName: '$patientDetails.name'
+      } }
+      ]); // Awaiting aggregate directly returns the array
 
-    console.log('API /api/patientrequests GET: Final Query object:', query);
-    const patientRequests = await PatientRequest.find(query);
-    console.log('API /api/patientrequests GET: Fetched requests count:', patientRequests.length);
+    // Convert ObjectId to strings for consistent JSON response
+    const formattedRequests = patientRequests.map(request => ({
+        ...request,
+        _id: request._id.toString(),
+        patientId: request.patientId.toString(),
+        // doctorId might be null if the query didn't match on doctorId, handle if necessary
+        doctorId: request.doctorId ? request.doctorId.toString() : null,
+        // uploadedPdfBase64 is already included if it exists
+    }));
 
-    return NextResponse.json(patientRequests);
+    console.log('API /api/patientrequests GET: Fetched formatted requests count:', formattedRequests.length);
+
+    return NextResponse.json(formattedRequests);
 
   } catch (error) {
     console.error('Error in GET /api/patientrequests:', error);

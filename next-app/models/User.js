@@ -77,6 +77,14 @@ const userSchema = new mongoose.Schema({
   twoFactorEnabled: {
     type: Boolean,
     default: false
+  },
+  analyzedPdfData: {
+    type: String,
+    default: null
+  },
+  uploadedPdfBase64: {
+    type: String,
+    default: null
   }
 }, {
   timestamps: true

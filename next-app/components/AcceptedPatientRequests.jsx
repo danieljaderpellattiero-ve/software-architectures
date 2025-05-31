@@ -2,6 +2,15 @@ import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { useAuth } from '@/context/AuthContext';
 
+const handleDownloadPdf = (base64) => {
+  const link = document.createElement('a');
+  link.href = `data:application/pdf;base64,${base64}`;
+  link.download = 'uploaded_medical_document.pdf';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 const AcceptedPatientRequests = () => {
   const { user, authLoading } = useAuth();
   const [confirmedRequests, setConfirmedRequests] = useState([]);
@@ -55,7 +64,15 @@ const AcceptedPatientRequests = () => {
                    <p className="text-gray-600 text-sm">Appointment: {new Date(request.appointmentDateTime).toLocaleString()}</p>
                 )}
               </div>
-              {/* Add any other relevant details or actions here */}
+              {/* Download PDF Button for Doctors */}
+              {request.uploadedPdfBase64 && (
+                <button
+                  onClick={() => handleDownloadPdf(request.uploadedPdfBase64)}
+                  className="ml-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm"
+                >
+                  Download PDF
+                </button>
+              )}
             </div>
           ))}
         </div>

@@ -26,7 +26,7 @@ export async function GET(request) {
     }
     
     console.log('API Profile GET: Fetching user with userId:', userId);
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select('+analyzedPdfData +uploadedPdfBase64');
     
     if (!user) {
       console.warn(`API Profile GET: User not found for userId: ${userId}.`);
@@ -47,6 +47,8 @@ export async function GET(request) {
       city: user.city || '',
       homeAddress: user.homeAddress || '',
       medicalData: user.medicalData || {},
+      analyzedPdfData: user.analyzedPdfData || null, // Include the analyzed PDF data
+      uploadedPdfBase64: user.uploadedPdfBase64 || null, // Include the uploaded PDF Base64 data
       twoFactorEnabled: user.twoFactorEnabled || false // Include 2FA status
     };
     

@@ -21,16 +21,39 @@ export async function GET(request) {
     const db = client.db();
 
     // Find all patient requests for the logged-in doctor with status true (accepted)
-    const acceptedRequests = await db.collection('patientrequests').find(
-      { doctorId: doctorId, status: true }
-    ).sort({ appointmentDateTime: 1 }).toArray(); // Sort by appointment date/time
+    // Use aggregation to join with the users collection to get patient details, including PDF data
+    const acceptedRequests = await db.collection('patientrequests').aggregate([
+      { $match: { doctorId: doctorId, status: true } },
+      { $sort: { appointmentDateTime: 1 } },
+      { $lookup: {
+          from: 'users', // The collection to join
+          localField: 'patientId', // Field from the patientrequests collection
+          foreignField: '_id', // Field from the users collection
+          as: 'patientDetails' // Output array field name
+      } },
+      { $unwind: '$patientDetails' }, // Deconstruct the patientDetails array
+      { $project: { // Reshape the output document
+          _id: 1,
+          patientId: 1,
+          patientName: 1,
+          doctorId: 1,
+          doctorName: 1,
+          request: 1,
+          status: 1,
+          timestamp: 1,
+          appointmentDateTime: 1,
+          // Include fields from patientDetails, specifically the PDF data
+          uploadedPdfBase64: '$patientDetails.uploadedPdfBase64' 
+      } }
+    ]).toArray();
 
-    // Convert ObjectId to strings for consistent JSON response
+    // Convert ObjectId to strings for consistent JSON response (optional for fields already projected as strings)
     const formattedRequests = acceptedRequests.map(request => ({
         ...request,
         _id: request._id.toString(),
         patientId: request.patientId.toString(),
         doctorId: request.doctorId.toString(),
+        // uploadedPdfBase64 is already included if it exists
     }));
 
     return NextResponse.json(formattedRequests);
