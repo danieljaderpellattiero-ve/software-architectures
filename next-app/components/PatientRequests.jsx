@@ -3,6 +3,9 @@ import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { useAuth } from '@/context/AuthContext'; // Import useAuth
 import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
+import { useLoading } from '@/app/providers';
+import AppointmentModal from './AppointmentModal'; // Import the new modal component
 // Remove backend imports from frontend component
 // import mongoose from "mongoose";
 // import PatientRequest from "@/models/patientRequest";
@@ -13,7 +16,11 @@ import Cookies from 'js-cookie';
 const PatientRequests = () => {
   const { user, authLoading } = useAuth(); // Get user and authLoading from useAuth
   const [requests, setRequests] = useState([]); // State to store fetched requests
-  // Removed explicit loading and error states as per previous styling
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  const [selectedRequest, setSelectedRequest] = useState(null); // State to store the request being scheduled
+  const { setIsLoading } = useLoading();
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -66,55 +73,87 @@ const PatientRequests = () => {
   if (!requests || requests.length === 0) {
     // You might want a minimal loading indicator or nothing here based on desired old styling
     // For now, just show nothing if no requests, assuming the parent handles overall loading
-    return <div>No patient requests found.</div>; // Or return null
+    return (
+      <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4" role="alert">
+        <p className="font-bold">No Pending Patient Requests</p>
+        <p>There are currently no patient requests awaiting your attention.</p>
+      </div>
+    );
   }
 
-  const handleAccept = async (requestId) => {
+  const handleAcceptRequest = (request) => {
+    setSelectedRequest(request);
+    setIsModalOpen(true);
+    console.log('Accepting request:', request);
+    // TODO: Implement logic to update request status to accepted and set appointment time
+  };
+
+  const handleModalSubmit = async (date, time) => {
+    console.log('Scheduling appointment for request:', selectedRequest._id, 'on', date, 'at', time);
+    
+    // TODO: Implement API call to update request with scheduled date and time
     try {
-      console.log('PatientRequests: Attempting to accept request:', requestId);
-      const response = await fetch(`/api/doctor/patientrequests/${requestId}`, {
+      const response = await fetch(`/api/doctor/requests/${selectedRequest._id}/accept`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
+        body: JSON.stringify({ date, time }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('PatientRequests: Error accepting request:', errorData.message || 'Failed to accept patient request');
-        // Handle error in UI, e.g., show a temporary message
-      } else {
-        const updatedRequest = await response.json();
-        console.log('PatientRequests: Request accepted successfully:', updatedRequest);
-        // Remove the accepted request from the state
-        setRequests(requests.filter(req => req._id !== requestId));
+        throw new Error(data.error || 'Failed to schedule appointment');
       }
-    } catch (err) {
-      console.error('PatientRequests: Error accepting request (catch block):', err);
-      // Handle error in UI
+
+      console.log('Appointment scheduled successfully:', data);
+      // After successful API call:
+      // Remove the accepted request from the current list
+      setRequests(requests.filter(req => req._id !== selectedRequest._id));
+      alert(data.message || 'Appointment scheduled successfully!');
+
+    } catch (error) {
+      console.error('Error scheduling appointment:', error);
+      alert(error.message || 'Failed to schedule appointment. Please try again.');
+      // Optionally, handle error state or revert UI changes
+    } finally {
+      // Close the modal
+      setIsModalOpen(false);
+      // Clear the selected request
+      setSelectedRequest(null);
     }
   };
 
-  const handleDeny = async (requestId) => {
+  const handleModalClose = () => {
+    console.log('Closing modal');
+    setIsModalOpen(false);
+    setSelectedRequest(null);
+  };
+
+  const handleRejectRequest = async (requestId) => {
+    console.log('Rejecting request with ID:', requestId);
+    // TODO: Implement logic to update request status to rejected
     try {
-      console.log('PatientRequests: Attempting to deny request:', requestId);
-      const response = await fetch(`/api/doctor/patientrequests/${requestId}`, {
-        method: 'DELETE',
-        credentials: 'include',
+      const response = await fetch(`/api/doctor/requests/${requestId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'rejected' }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('PatientRequests: Error denying request:', errorData.message || 'Failed to deny patient request');
+        console.error('PatientRequests: Error rejecting request:', errorData.message || 'Failed to reject patient request');
         // Handle error in UI
       } else {
-        console.log('PatientRequests: Request denied successfully:', requestId);
-        // Remove the denied request from the state
+        console.log('PatientRequests: Request rejected successfully:', requestId);
+        // Remove the rejected request from the state
         setRequests(requests.filter(req => req._id !== requestId));
       }
     } catch (err) {
-      console.error('PatientRequests: Error denying request (catch block):', err);
+      console.error('PatientRequests: Error rejecting request (catch block):', err);
       // Handle error in UI
     }
   };
@@ -133,21 +172,27 @@ const PatientRequests = () => {
           <div className="flex space-x-2">
             {request.status === false && (
               <button
-                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                onClick={() => handleAccept(request._id)}
+                onClick={() => handleAcceptRequest(request)}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm"
               >
                 Accept
               </button>
             )}
             <button
-              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-              onClick={() => handleDeny(request._id)}
+              onClick={() => handleRejectRequest(request._id)}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm"
             >
-              {request.status === true ? 'Delete' : 'Deny'}
+              Reject
             </button>
           </div>
         </div>
       ))}
+      {/* Appointment Scheduling Modal */}
+      <AppointmentModal 
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onSubmit={handleModalSubmit}
+      />
     </div>
   );
 };

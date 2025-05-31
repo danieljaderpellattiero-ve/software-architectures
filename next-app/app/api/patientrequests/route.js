@@ -97,6 +97,7 @@ export async function GET(request) {
     // Build initial query based on the authenticated user's role and ID
     if (userRole === 'doctor') {
       query.doctorId = new mongoose.Types.ObjectId(userId);
+      query.status = false; // Only fetch pending requests for doctors
       console.log('API /api/patientrequests GET: Building query for doctor with ID:', userId);
     } else if (userRole === 'patient') {
       query.patientId = new mongoose.Types.ObjectId(userId);

@@ -10,6 +10,7 @@ const BookAppointment = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [patientRequest, setPatientRequest] = useState('');
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -36,6 +37,10 @@ const BookAppointment = () => {
 
   const handleBookAppointment = async (doctor) => {
     console.log('Booking appointment with doctor:', doctor);
+    if (!patientRequest.trim()) {
+      alert('Please enter your request details for the appointment.');
+      return;
+    }
     try {
       const response = await fetch('/api/patient/request', {
         method: 'POST',
@@ -44,7 +49,8 @@ const BookAppointment = () => {
         },
         body: JSON.stringify({
           doctorId: doctor._id,
-          doctorName: doctor.name
+          doctorName: doctor.name,
+          request: patientRequest
         })
       });
 
@@ -55,6 +61,7 @@ const BookAppointment = () => {
       const data = await response.json();
       console.log('Request sent successfully:', data);
       setSelectedDoctor(doctor);
+      setPatientRequest('');
     } catch (error) {
       console.error('Error sending request:', error);
       console.error('Full error object:', error);
@@ -69,13 +76,29 @@ const BookAppointment = () => {
 
   if (loading) return <div className="text-center p-4">Loading doctors...</div>;
   if (error) return <div className="text-red-500 p-4">Error loading doctors: {error}</div>;
-  if (doctors.length === 0) return <div className="text-center p-4">No doctors available.</div>;
+  if (doctors.length === 0) return (
+    <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+      <p className="font-bold">No Doctors Available</p>
+      <p>Please check back later or contact support.</p>
+    </div>
+  );
 
   console.log('Current selectedDoctor:', selectedDoctor);
 
   return (
     <div className="p-5 bg-gray-100 rounded-md shadow-md">
       <h1 className="text-2xl font-bold text-purple-700 mb-5">Book New Appointment</h1>
+      <div className="mb-5">
+        <label htmlFor="patientRequest" className="block text-gray-700 text-sm font-bold mb-2">Your Request:</label>
+        <textarea
+          id="patientRequest"
+          rows="4"
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          value={patientRequest}
+          onChange={(e) => setPatientRequest(e.target.value)}
+          placeholder="Please describe your symptoms or the reason for your visit..."
+        ></textarea>
+      </div>
       <div className="flex flex-col gap-5">
         {doctors.map((doctor) => (
           <div

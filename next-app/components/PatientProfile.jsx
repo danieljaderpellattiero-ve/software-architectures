@@ -6,9 +6,11 @@ import Image from 'next/image';
 import imageCompression from 'browser-image-compression';
 import { FaUser } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 const PatientProfile = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const router = useRouter();
   const [isEditable, setIsEditable] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
@@ -29,6 +31,7 @@ const PatientProfile = () => {
   const [qrCode, setQrCode] = useState(null);
   const [secret, setSecret] = useState(null);
   const [verificationCode, setVerificationCode] = useState('');
+  const [twoFactorError, setTwoFactorError] = useState(null);
   const [show2FASetup, setShow2FASetup] = useState(false);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
 
@@ -202,6 +205,7 @@ const PatientProfile = () => {
     try {
       setLoading(true);
       setError(null);
+      setTwoFactorError(null);
       setSuccessMessage(null);
 
       const response = await fetch('/api/auth/setup-2fa', {
@@ -218,7 +222,8 @@ const PatientProfile = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to verify 2FA');
+        setTwoFactorError(data.message || 'Failed to verify 2FA');
+        return;
       }
 
       setSuccessMessage('2FA has been enabled successfully!');
@@ -228,7 +233,7 @@ const PatientProfile = () => {
       setVerificationCode('');
       setTwoFactorEnabled(true);
     } catch (err) {
-      setError(err.message || 'Failed to verify 2FA');
+      setTwoFactorError(err.message || 'An unexpected error occurred during 2FA verification.');
     } finally {
       setLoading(false);
     }
@@ -262,6 +267,36 @@ const PatientProfile = () => {
       setVerificationCode('');
     } catch (err) {
       setError(err.message || 'Failed to disable 2FA');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      setSuccessMessage(null);
+
+      const response = await fetch('/api/patient/delete-account', {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete account');
+      }
+
+      // Account deleted successfully, now log out the user
+      await logout();
+      
+    } catch (err) {
+      setError(err.message || 'Failed to delete account');
     } finally {
       setLoading(false);
     }
@@ -562,6 +597,7 @@ const PatientProfile = () => {
                     pattern="[0-9]*"
                     inputMode="numeric"
                   />
+                  {twoFactorError && <p className="text-red-500 text-sm mt-1">{twoFactorError}</p>}
                 </div>
                 <button
                   onClick={handleVerify2FA}
@@ -574,6 +610,19 @@ const PatientProfile = () => {
             )}
           </div>
         )}
+      </div>
+
+      <div className="mt-8 border-t pt-6">
+        <h3 className="text-xl font-semibold text-red-600 mb-4">Danger Zone</h3>
+        <button
+          onClick={handleDeleteAccount}
+          className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Delete Account
+        </button>
+        <p className="text-sm text-gray-600 mt-2">
+          Warning: This action cannot be undone. All your data will be permanently deleted.
+        </p>
       </div>
     </div>
   );
