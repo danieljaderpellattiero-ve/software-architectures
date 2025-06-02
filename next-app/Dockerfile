@@ -16,6 +16,10 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# Copy the entrypoint script and make it executable
+COPY docker-entrypoint.sh .
+RUN chmod +x docker-entrypoint.sh
+
 # Production image
 FROM node:18-alpine
 
@@ -34,5 +38,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Expose port 3000
 EXPOSE 3000
 
-# Start the application
+# Set the entrypoint to the script
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+
+# Start the application (this becomes the default command to the entrypoint script)
 CMD ["npm", "run", "dev"]
