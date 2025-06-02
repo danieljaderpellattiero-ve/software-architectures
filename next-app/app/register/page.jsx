@@ -93,7 +93,8 @@ function RegisterPage() {
         {/* Step 1 */}
         {step === 1 && (
           <form className="flex flex-col" onSubmit={handleNext}>
-            <label className={`mb-1 font-bold text-${textColor}`}>First Name</label>
+            <label className={`mb-1 font-bold text-${textColor}`}>First Name <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               className={`mb-3 px-4 py-3 border border-${borderColor} rounded-md text-sm bg-gray-50 focus:border-${focusBorderColor} focus:outline-none`}
@@ -102,7 +103,8 @@ function RegisterPage() {
               placeholder="Enter your first name"
               required
             />
-            <label className={`mb-1 font-bold text-${textColor}`}>Last Name</label>
+            <label className={`mb-1 font-bold text-${textColor}`}>Last Name <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               className={`mb-3 px-4 py-3 border border-${borderColor} rounded-md text-sm bg-gray-50 focus:border-${focusBorderColor} focus:outline-none`}
@@ -111,7 +113,8 @@ function RegisterPage() {
               placeholder="Enter your last name"
               required
             />
-            <label className={`mb-1 font-bold text-${textColor}`}>Email Address</label>
+            <label className={`mb-1 font-bold text-${textColor}`}>Email Address <span className="text-red-500">*</span>
+            </label>
             <input
               type="email"
               className={`mb-3 px-4 py-3 border border-${borderColor} rounded-md text-sm bg-gray-50 focus:border-${focusBorderColor} focus:outline-none`}
@@ -120,7 +123,8 @@ function RegisterPage() {
               placeholder="Enter your email"
               required
             />
-            <label className={`mb-1 font-bold text-${textColor}`}>Phone Number</label>
+            <label className={`mb-1 font-bold text-${textColor}`}>Phone Number <span className="text-red-500">*</span>
+            </label>
             <input
               type="tel"
               className={`mb-3 px-4 py-3 border border-${borderColor} rounded-md text-sm bg-gray-50 focus:border-${focusBorderColor} focus:outline-none`}
@@ -129,7 +133,8 @@ function RegisterPage() {
               placeholder="Enter your phone number"
               required
             />
-            <label className={`mb-1 font-bold text-${textColor}`}>Codice Fiscale</label>
+            <label className={`mb-1 font-bold text-${textColor}`}>Codice Fiscale <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               className={`mb-3 px-4 py-3 border border-${borderColor} rounded-md text-sm bg-gray-50 focus:border-${focusBorderColor} focus:outline-none`}
@@ -138,7 +143,8 @@ function RegisterPage() {
               placeholder="Enter your Codice Fiscale"
               required
             />
-            <label className={`mb-1 font-bold text-${textColor}`}>Password</label>
+            <label className={`mb-1 font-bold text-${textColor}`}>Password <span className="text-red-500">*</span>
+            </label>
             <input
               type="password"
               className={`mb-5 px-4 py-3 border border-${borderColor} rounded-md text-sm bg-gray-50 focus:border-${focusBorderColor} focus:outline-none`}
@@ -178,7 +184,8 @@ function RegisterPage() {
               onChange={(e) => setWeight(e.target.value)}
               placeholder="Enter your weight"
             />
-            <label className={`mb-1 font-bold text-${textColor}`}>Current Address</label>
+            <label className={`mb-1 font-bold text-${textColor}`}>Current Address <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               className={`mb-5 px-4 py-3 border border-${borderColor} rounded-md text-sm bg-gray-50 focus:border-${focusBorderColor} focus:outline-none`}

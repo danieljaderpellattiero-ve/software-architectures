@@ -86,7 +86,6 @@ software-architectures-main/
 git clone https://github.com/your-username/hospital-management-system.git
 cd software-architectures-main/next-app
 npm install
-npm run dev
 ```
 
 Visit the app at [http://localhost:3000](http://localhost:3000)
@@ -94,17 +93,13 @@ Visit the app at [http://localhost:3000](http://localhost:3000)
 ---
 
 ### Docker Deployment
-
-```bash
-docker build -t hospital-app ./next-app
-docker run -p 3000:3000 hospital-app
-```
-
-Or with Docker Compose:
+with Docker Compose:
 
 ```bash
 docker compose up --build
 ```
+open up the port from the docker container
+
 
 ---
 
