@@ -342,8 +342,8 @@ const PatientProfile = () => {
       console.log('PDF file read as Base64.');
 
       try {
-        // Send PDF to Python Flask server
-        const flaskResponse = await fetch('http://localhost:8180/Gemini', {
+        // Send PDF to the Next.js API route for processing
+        const nextApiResponse = await fetch('/api/process-pdf', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -351,33 +351,33 @@ const PatientProfile = () => {
           body: JSON.stringify({ pdf: base64String }),
         });
 
-        const flaskData = await flaskResponse.json();
+        const nextApiData = await nextApiResponse.json();
 
-        if (!flaskResponse.ok) {
-          throw new Error(flaskData.error || 'Error processing PDF on server.');
+        if (!nextApiResponse.ok) {
+          throw new Error(nextApiData.error || 'Error processing PDF via API route.');
         }
 
-        console.log('PDF processed by Flask server, response:', flaskData.response);
+        console.log('PDF processed via API route, response:', nextApiData.response);
 
-        // Send both the Base64 PDF and the analyzed result to the Next.js API endpoint
-        const nextApiResponse = await fetch('/api/patient/profile/save-analyzed-data', {
+        // Send both the Base64 PDF and the analyzed result to the Next.js profile API endpoint
+        const profileUpdateResponse = await fetch('/api/patient/profile/save-analyzed-data', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             base64Pdf: base64String, // Include the Base64 PDF string
-            analyzedData: flaskData.response // Include the analyzed data
+            analyzedData: nextApiData.response // Include the analyzed data from the process-pdf API
           }),
         });
 
-        const nextApiData = await nextApiResponse.json();
+        const profileUpdateData = await profileUpdateResponse.json();
 
-        if (!nextApiResponse.ok) {
-          throw new Error(nextApiData.error || 'Error saving analyzed data to profile.');
+        if (!profileUpdateResponse.ok) {
+          throw new Error(profileUpdateData.error || 'Error saving analyzed data to profile.');
         }
 
-        console.log('Analyzed data saved to profile:', nextApiData);
+        console.log('Analyzed data saved to profile:', profileUpdateData);
         
         // Re-fetch patient data to update the profile display
         await fetchPatientData();

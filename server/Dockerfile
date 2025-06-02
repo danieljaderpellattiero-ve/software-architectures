@@ -16,8 +16,9 @@ COPY . .
 # Create directory for PDFs
 RUN mkdir -p received_pdfs
 
-# Expose the port the app runs on
+# Expose both ports
 EXPOSE 5000
+EXPOSE 8180
 
 # Command to run the application
 CMD ["python", "server.py"] 

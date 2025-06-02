@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   next-app:
     build:
@@ -11,9 +9,12 @@ services:
       - MONGODB_URI=mongodb://mongodb:27017/myapp
       - NEXT_PUBLIC_API_URL=http://server:5000
       - NODE_ENV=development
+      - JWT_SECRET=a1b2c3d4e5f678901234567890abcdef1234567890abcdef1234567890abcdef
+      - NEXT_PUBLIC_GEMINI_URL=http://server:8180
     volumes:
       - ./next-app:/app
       - /app/node_modules
+      - /app/.next
     depends_on:
       - server
       - mongodb
@@ -26,8 +27,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
+      - "8180:8180"
     environment:
       - MONGODB_URI=mongodb://mongodb:27017/myapp
+      - GEMINI_API_KEY=AIzaSyDQGr8bbdPKCgzmte-G3xDQRYfIlD3WhgM
     volumes:
       - ./server:/app
       - ./server/received_pdfs:/app/received_pdfs
