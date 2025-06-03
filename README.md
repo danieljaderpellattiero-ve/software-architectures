@@ -26,6 +26,7 @@ A full-stack hospital management system built using **Next.js** for the frontend
 This application demonstrates a complete hospital management workflow:
 
 - Patient registration and dashboard
+- PDF analyzef feature for analyzing and saving medical reports as pdf and in patients personal pdata
 - 2FA for patients
 - Doctor/admin dashboards
 - Authentication system
