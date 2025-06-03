@@ -164,7 +164,7 @@ The application will be available at [http://localhost:8080](http://localhost:80
 ---
 
 <div align="center">
-  <sub>Hospital Management System  Built for software architecture course</sub>
+  <sub>Hospital Management System  Built for software architecture course by 908802, 908420,908816,908059 </sub>
 </div>
 
 ---
