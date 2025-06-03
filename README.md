@@ -100,7 +100,9 @@ docker compose up --build
 ```
 open up the port from the docker container
 
-
+To test as a patient -> register and enter your data then sign in
+To test as an Admin you can sign in with these credentuials (username: admin@admin.com, Password: admin123)
+To test as a doctor, create user from admin users list and then logout and sign in with the chosen credentils
 ---
 
 
