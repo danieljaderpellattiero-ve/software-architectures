@@ -16,10 +16,13 @@ services:
       - /app/node_modules
       - /app/.next
     depends_on:
-      - server
-      - mongodb
+      mongodb:
+        condition: service_healthy
+      server:
+        condition: service_started
     networks:
       - app-network
+    restart: unless-stopped
 
   server:
     build:
@@ -35,9 +38,11 @@ services:
       - ./server:/app
       - ./server/received_pdfs:/app/received_pdfs
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     networks:
       - app-network
+    restart: unless-stopped
 
   mongodb:
     image: mongo:latest
@@ -55,6 +60,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    restart: unless-stopped
 
 volumes:
   mongodb_data:
