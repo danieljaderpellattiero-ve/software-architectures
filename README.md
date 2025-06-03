@@ -25,7 +25,8 @@ A full-stack hospital management system built using **Next.js** for the frontend
 
 This application demonstrates a complete hospital management workflow:
 
-- Patient management
+- Patient registration and dashboard
+- 2FA for patients
 - Doctor/admin dashboards
 - Authentication system
 - Modular architecture for ease of maintenance
@@ -37,7 +38,7 @@ The frontend is built using **Next.js** with server-side rendering. Backend APIs
 ## ✨ Features
 
 - 🧑‍⚕️ Doctor & Admin Dashboards
-- 🧾 Patient Records Management
+- 🧾 Patient appointments request Management
 - 🔐 User Authentication
 - 🐳 Docker-based deployment setup
 - 📱 Responsive Design
@@ -120,6 +121,7 @@ software-architectures-main/
 git clone https://github.com/your-username/hospital-management-system.git
 cd software-architectures-main/next-app
 npm install
+npm run dev
 ```
 
 Visit the app at [http://localhost:3000](http://localhost:3000)
@@ -159,12 +161,8 @@ The application will be available at [http://localhost:8080](http://localhost:80
 
 ---
 
-## 📝 Author
-
-Built for the **Software Architectures** coursework.
-
----
-
 <div align="center">
   <sub>Hospital Management System  Built for software architecture course</sub>
 </div>
+
+---
