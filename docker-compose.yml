@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   next-app:
     build:
@@ -6,15 +8,11 @@ services:
     ports:
       - "8080:3000"
     environment:
+      - NODE_ENV=production
       - MONGODB_URI=mongodb://mongodb:27017/myapp
       - NEXT_PUBLIC_API_URL=http://server:5000
-      - NODE_ENV=development
       - JWT_SECRET=a1b2c3d4e5f678901234567890abcdef1234567890abcdef1234567890abcdef
       - NEXT_PUBLIC_GEMINI_URL=http://server:8180
-    volumes:
-      - ./next-app:/app
-      - /app/node_modules
-      - /app/.next
     depends_on:
       mongodb:
         condition: service_healthy

@@ -4,11 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev -H 0.0.0.0 -p 3000",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
+  "dev": "next dev -H 0.0.0.0 -p 3000",
+  "build": "next build",
+  "start": "next start -H 0.0.0.0 -p 3000"
+},
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "bcryptjs": "^2.4.3",
