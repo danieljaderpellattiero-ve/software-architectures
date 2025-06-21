@@ -1,8 +1,8 @@
 # 🏥 Hospital Management System
 
-[![My Skills](https://skillicons.dev/icons?i=nextjs,react,tailwind,mongodb,flask,nodejs,py,docker,gcp,&perline=10)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=nextjs,react,tailwind,mongodb,flask,nodejs,py,docker,&perline=10)](https://skillicons.dev)
 
-A full-stack hospital management system built using **Next.js** for the frontend and **Node.js/Express** for the backend. It supports patient record handling, account management, and provider coordination. The application is fully containerized using Docker.
+A full-stack hospital management system built using **Next.js** for the frontend and Authentication, **Python/Flask** for the backend and MongoDB for database. It supports patient record handling, account management, and appointment making . The application is fully containerized using Docker compose.
 
 ---
 
@@ -12,12 +12,20 @@ A full-stack hospital management system built using **Next.js** for the frontend
   - [📚 Table of Contents](#-table-of-contents)
   - [🚀 Overview](#-overview)
   - [✨ Features](#-features)
-  - [📱 Pages & Routes](#-pages--routes)
+  - [📱 Pages \& Routes](#-pages--routes)
+    - [Public Pages](#public-pages)
+    - [Patient Pages](#patient-pages)
+    - [Doctor Pages](#doctor-pages)
+    - [Admin Pages](#admin-pages)
   - [📁 Project Structure](#-project-structure)
   - [🛠 Prerequisites](#-prerequisites)
   - [📥 Installation](#-installation)
-  - [👥 User Roles & Access](#-user-roles--access)
-  - [📝 Author](#-author)
+    - [Local Development](#local-development)
+    - [Docker Deployment](#docker-deployment)
+  - [👥 User Roles \& Access](#-user-roles--access)
+    - [Patient Access](#patient-access)
+    - [Admin Access](#admin-access)
+    - [Doctor Access](#doctor-access)
 
 ---
 
@@ -26,13 +34,11 @@ A full-stack hospital management system built using **Next.js** for the frontend
 This application demonstrates a complete hospital management workflow:
 
 - Patient registration and dashboard
+- PDF analyzef feature for analyzing and saving medical reports as pdf and in patients personal pdata
 - 2FA for patients
 - Doctor/admin dashboards
 - Authentication system
 - Modular architecture for ease of maintenance
-
-The frontend is built using **Next.js** with server-side rendering. Backend APIs are handled through integrated Next.js API routes.
-
 ---
 
 ## ✨ Features
@@ -57,24 +63,20 @@ The frontend is built using **Next.js** with server-side rendering. Backend APIs
 ### Patient Pages
 
 - `/patient/dashboard` - Patient's main dashboard
-- `/patient/appointments` - Appointment management
-- `/patient/records` - Medical records view
+- `/patientDashboard/bookAppointment` - Appointment management
 - `/patient/profile` - Profile management
 
 ### Doctor Pages
 
 - `/doctor/dashboard` - Doctor's main dashboard
-- `/doctor/patients` - Patient list and management
-- `/doctor/appointments` - Appointment scheduling
-- `/doctor/records` - Medical records management
-- `/doctor/profile` - Profile settings
+- `/doctorDashboard/patientRequests` - Patient Requests
+- `/doctorDashboard/confirmedPatients` - confirmed requests
 
 ### Admin Pages
 
 - `/admin/dashboard` - Admin control panel
-- `/admin/users` - User management
-- `/admin/doctors` - Doctor management
-- `/admin/settings` - System settings
+- `/admin/usersManagement` - User management
+- `/adminDashboard/systemlogs` - activity logs
 
 ---
 
@@ -162,7 +164,7 @@ The application will be available at [http://localhost:8080](http://localhost:80
 ---
 
 <div align="center">
-  <sub>Hospital Management System  Built for software architecture course</sub>
+  <sub>Hospital Management System  Built for software architecture course by 908802, 908420,908816,908059 </sub>
 </div>
 
 ---
