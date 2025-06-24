@@ -5,7 +5,7 @@
 A full-stack hospital management system built using **Next.js** for the frontend and Authentication, **Python/Flask** for the backend and MongoDB for database. It supports patient record handling, account management, and appointment making . The application is fully containerized using Docker compose.
 
 ---
-[![My Skills](https://skillicons.dev/icons?i=aws)](https://skillicons.dev) :AWS Deployment: https://ec2-13-61-27-96.eu-north-1.compute.amazonaws.com/
+[![My Skills](https://skillicons.dev/icons?i=aws)](https://skillicons.dev)AWS Deployment: https://ec2-13-61-27-96.eu-north-1.compute.amazonaws.com/
 ## 📚 Table of Contents
 
 - [🏥 Hospital Management System](#-hospital-management-system)
