@@ -40,8 +40,10 @@ const AcceptedPatientRequests = () => {
       }
     };
 
-    fetchConfirmedRequests();
-  }, []); // Empty dependency array means this effect runs once on mount
+    if (!authLoading && user && user.role === 'doctor') {
+      fetchConfirmedRequests();
+    }
+  }, [authLoading, user]); // Depend on authLoading and user
 
   if (loading) return <div className="text-center p-4">Loading confirmed appointments...</div>;
   if (error) return <div className="text-red-500 p-4">Error loading confirmed appointments: {error}</div>;

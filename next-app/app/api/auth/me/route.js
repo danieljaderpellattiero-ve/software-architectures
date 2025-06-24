@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/config/db';
 import User from '@/models/User';
 import jwt from 'jsonwebtoken';
+import { cookies } from 'next/headers';
 
 export async function GET(request) {
   try {
@@ -42,6 +43,23 @@ export async function GET(request) {
         }
       } else {
          console.log('API /api/auth/me: No token found in Authorization header.');
+      }
+    } else {
+      // Try to get the token from the cookie
+      const cookieStore = cookies();
+      const token = cookieStore.get('token')?.value;
+      if (token) {
+        try {
+          const decoded = jwt.verify(token, process.env.JWT_SECRET);
+          userId = decoded.id;
+          console.log("API /api/auth/me: Token decoded from cookie, userId:", userId);
+        } catch (error) {
+          console.error('API /api/auth/me: Token verification from cookie failed:', error.message);
+          return NextResponse.json(
+            { success: false, error: 'Invalid token' },
+            { status: 401 }
+          );
+        }
       }
     }
     

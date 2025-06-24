@@ -12,8 +12,6 @@ export function AuthProvider({ children }) {
   const checkAuth = async () => {
     try {
       console.log('AuthContext: Checking authentication via /api/auth/me...');
-      // Rely on credentials: 'include' to send the cookie.
-      // Middleware should handle authentication and setting user info.
       const response = await fetch('/api/auth/me', {
         credentials: 'include',
         headers: {
@@ -26,7 +24,7 @@ export function AuthProvider({ children }) {
       if (!response.ok) {
         console.log('AuthContext: Auth check failed (response not ok):', response.status);
         setUser(null); // Ensure user is null if auth check fails
-        return;
+        return null;
       }
 
       const data = await response.json();
@@ -35,13 +33,16 @@ export function AuthProvider({ children }) {
       if (data.success && data.user) {
         console.log('AuthContext: Auth check successful, setting user:', data.user);
         setUser(data.user);
+        return data.user;
       } else {
         console.log('AuthContext: Auth check response indicates no user or success: false', data);
         setUser(null);
+        return null;
       }
     } catch (error) {
       console.error('AuthContext: Auth check fetch error:', error);
       setUser(null);
+      return null;
     } finally {
       console.log('AuthContext: Auth check process finished.');
       setAuthLoading(false);
@@ -73,26 +74,36 @@ export function AuthProvider({ children }) {
         throw new Error(data.message || 'Login failed');
       }
 
-      // If 2FA is required, return false to indicate login is not complete
       if (data.requires2FA) {
         return false;
       }
 
-      if (data.success && data.user) {
-        console.log('AuthContext: Login successful, setting user:', data.user);
-        setUser(data.user);
-        
-        // Small delay to allow state update and potential cookie propagation
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        // Redirect based on user role
-        const redirectPath = data.user.role === 'doctor' ? '/doctorDashboard' : '/patientDashboard';
-        console.log('AuthContext: Redirecting to:', redirectPath);
-        router.push(redirectPath);
-        
+      if (data.success) {
+        // Retry checkAuth until the user matches the expected email and role
+        let freshUser = null;
+        for (let i = 0; i < 10; i++) {
+          freshUser = await checkAuth();
+          if (
+            freshUser &&
+            freshUser.email === data.user.email &&
+            freshUser.role === data.user.role
+          ) {
+            break;
+          }
+          await new Promise(res => setTimeout(res, 300));
+        }
+        if (freshUser) {
+          const redirectPath =
+            freshUser.role === 'doctor'
+              ? '/doctorDashboard'
+              : freshUser.role === 'admin'
+              ? '/adminDashboard'
+              : '/patientDashboard';
+          console.log('AuthContext: Redirecting to:', redirectPath);
+          window.location.href = redirectPath; // force full reload to use new cookie
+        }
         return true;
       } else {
-        console.log('AuthContext: Login response missing success or user data', data);
         return false;
       }
     } catch (error) {
@@ -107,7 +118,7 @@ export function AuthProvider({ children }) {
         method: 'POST',
         credentials: 'include',
       });
-      setUser(null);
+      await checkAuth(); // Ensure user state is cleared after logout
       router.push('/login');
     } catch (error) {
       console.error('AuthContext: Logout error:', error);

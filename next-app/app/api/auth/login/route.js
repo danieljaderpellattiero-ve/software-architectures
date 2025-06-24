@@ -62,8 +62,10 @@ export async function POST(request) {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 60 * 60 * 24 // 24 hours
+        maxAge: 60 * 60 * 24, // 24 hours
+        path: '/', // ensure this is set
       });
+      response.headers.set('Cache-Control', 'no-store');
 
       return response;
     }

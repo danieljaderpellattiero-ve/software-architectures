@@ -11,7 +11,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 const PatientProfile = () => {
-  const { user, logout } = useAuth();
+  const { user, authLoading, logout } = useAuth();
   const router = useRouter();
   const [isEditable, setIsEditable] = useState(false);
   const [formData, setFormData] = useState({
@@ -44,8 +44,10 @@ const PatientProfile = () => {
   const [analyzedMedicalData, setAnalyzedMedicalData] = useState(null);
 
   useEffect(() => {
-    fetchPatientData();
-  }, [user]);
+    if (!authLoading && user && user.role === 'patient') {
+      fetchPatientData();
+    }
+  }, [authLoading, user]);
 
   const fetchPatientData = async () => {
     try {
@@ -410,6 +412,16 @@ const PatientProfile = () => {
     link.click();
     document.body.removeChild(link);
   };
+
+  // Show loading indicator while auth state is loading
+  if (authLoading) {
+    return <div className="flex items-center justify-center h-full w-full"><span>Loading...</span></div>;
+  }
+
+  // If user is not available, show not authorized (or redirect if desired)
+  if (!user) {
+    return <div className="flex items-center justify-center h-full w-full"><span>Not authorized</span></div>;
+  }
 
   if (loading) return <div className="text-center p-4">Loading...</div>;
   if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
