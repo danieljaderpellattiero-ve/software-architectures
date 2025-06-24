@@ -121,14 +121,6 @@ software-architectures-main/
 
 ```bash
 git clone https://github.com/your-username/hospital-management-system.git
-cd software-architectures-main/next-app
-npm install
-npm run dev
-```
-
-Visit the app at [http://localhost:3000](http://localhost:3000)
-
-### Docker Deployment
 
 ```bash
 docker compose up --build
