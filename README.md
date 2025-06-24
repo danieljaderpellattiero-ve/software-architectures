@@ -121,7 +121,7 @@ software-architectures-main/
 
 ```bash
 git clone https://github.com/your-username/hospital-management-system.git
-
+```
 ```bash
 docker compose up --build
 ```
